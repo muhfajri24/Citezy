@@ -72,8 +72,8 @@ export class HttpResearchApi implements ResearchApi {
         return parseStartResponse(await this.request("/api/runs", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(request) }));
     }
     async getRun(id: string, signal?: AbortSignal): Promise<ResearchRun> {
-        if (!id.trim())
-            throw new ResearchApiError("NOT_FOUND", "A research run ID is required.", 404);
+        if (!id.trim() || id === "." || id === "..")
+            throw new ResearchApiError("NOT_FOUND", "A valid research run ID is required.", 404);
         const run = parseRun(await this.request(`/api/runs/${encodeURIComponent(id)}`, { method: "GET", cache: "no-store" }, signal));
         if (run.id !== id)
             throw new ResearchApiError("INVALID_RESPONSE", "The research service returned a different run.");

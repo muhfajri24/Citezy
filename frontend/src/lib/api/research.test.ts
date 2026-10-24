@@ -217,3 +217,18 @@ describe("HTTP adapter", () => {
         expect(vi.getTimerCount()).toBe(0);
     });
 });
+
+
+describe("wire validation regressions", () => {
+    it.each(["2026-02-30T00:00:00Z", "2026-10-24T24:00:00Z", "2026-10-24T00:00:00+00:00"])("rejects invalid or noncanonical UTC timestamp %s", (created_at) => {
+        expect(() => parseRun({ ...fixture(), created_at })).toThrow("invalid response");
+    });
+    it.each(["2024-02-29T00:00:00Z", "2026-10-24T00:00:00.123456Z", "2026-10-24T00:00Z"])("accepts valid UTC timestamp %s", (created_at) => {
+        expect(parseRun({ ...fixture(), created_at }).created_at).toBe(created_at);
+    });
+    it.each([".", ".."])("rejects dot-segment ID %s before fetch", async (id) => {
+        const { api, fetcher } = clientWith(fixture());
+        await expect(api.getRun(id)).rejects.toMatchObject({ error: { code: "NOT_FOUND" } });
+        expect(fetcher).not.toHaveBeenCalled();
+    });
+});
