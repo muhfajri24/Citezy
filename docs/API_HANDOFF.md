@@ -121,3 +121,6 @@ Phase 2 follow-up fixes reject impossible UTC calendar timestamps and dot-segmen
 
 ## Approved Git workflow follow-up
 After the audit, the user approved dev based on existing main (8db0fb9), feat/frontend based on dev, and a commit/push of these audit fixes on feat/frontend. main is preserved. Both dev and feat/frontend contain the initial Phase 0-2 implementation; their PR difference consists only of audit fixes and documentation. feat/backend remains Dev 1 ownership. No merge or automatic PR creation is performed.
+
+## Phase 3 demo-only submission
+The landing now creates mock research requests and navigates to a minimal /research/{id} receipt. The provisional frontend demo limit is 10-500 trimmed characters; this does not establish backend limits or Dev 1 approval. A Phase 3 guard rejects non-mock modes before transport use; it never calls a real backend or silently falls back. The shared adapter preserves in-memory runs across client navigation only. Reloading displays an honest unavailable-session message. No polling/workbench/report UI is included. See IMPLEMENTATION_PHASE_3.md for actual checks and remaining decisions.
