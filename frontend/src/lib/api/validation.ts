@@ -6,7 +6,17 @@ const nonempty: Check = (v) => typeof v === "string" && v.trim().length > 0;
 const number: Check = (v) => typeof v === "number" && Number.isFinite(v);
 const nonnegative: Check = (v) => number(v) && (v as number) >= 0;
 const integer: Check = (v) => number(v) && Number.isInteger(v);
-const timestamp: Check = (v) => typeof v === "string" && /^\d{4}-\d{2}-\d{2}T.+Z$/.test(v) && Number.isFinite(Date.parse(v));
+const timestamp: Check = (value) => {
+    if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d{1,9})?)?Z$/.test(value)) {
+        return false;
+    }
+    const date = new Date(value);
+    if (!Number.isFinite(date.getTime())) return false;
+    // Date.parse normalizes impossible days and 24:00 into a different date.
+    // Compare calendar/time fields, retaining support for backend microseconds.
+    const seconds = value[16] === "Z" ? `${value.slice(0, 16)}:00` : value.slice(0, 19);
+    return date.toISOString().slice(0, 19) === seconds;
+};
 const url: Check = (v) => {
     if (typeof v !== "string")
         return false;

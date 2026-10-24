@@ -5,9 +5,9 @@
 ## Phase 0 audit
 The repository remote is https://github.com/muhfajri24/Citezy.git, branch main. Initially only two untracked documentation files existed; frontend/ and backend/ were empty. No framework, package manager lockfile, scripts, or AGENTS.md existed. Existing documentation is preserved. Frontend is independent of Dev 1 backend ownership; no backend or AI integrations are implemented.
 
-Missing requested path: docs/MASTER_SPEC.md. The available docs/Citezy_Track2_Hackathon_Master_Spec_v2.1.md was read instead (Parts A?F authoritative; appendices historical). FE.md locks Midnight Editorial, superseding the master spec's explicitly proposed palette. Master Spec minimum internal provenance fields differ from the FE wire draft: Dev 1 must approve how internal run_id/content_hash/numeric_check and tool metadata map to this public response. No schema agreement is implied.
+Missing requested path: docs/MASTER_SPEC.md. The available docs/Citezy_Track2_Hackathon_Master_Spec_v2.1.md was read instead (Parts A-F authoritative; appendices historical). FE.md locks Midnight Editorial, superseding the master spec's explicitly proposed palette. Master Spec minimum internal provenance fields differ from the FE wire draft: Dev 1 must approve how internal run_id/content_hash/numeric_check and tool metadata map to this public response. No schema agreement is implied.
 
-Scope: Phase 0?2 foundation only. No full landing, submission, workbench, polling hook, deployment or real research. npm selected because no package manager existed. Proposed future branch convention: feat/frontend-ui; merge owner needs team agreement. No commits or remote writes performed.
+Scope: Phase 0-2 foundation only. No full landing, submission, workbench, polling hook, deployment or real research. npm selected because no package manager existed. Requested PR branch convention: feat/frontend into dev; neither branch existed at the PR-readiness audit. Merge owner needs team agreement. No commits or remote writes performed.
 
 ## Routes
 | Method | Path | Request | Success response |
@@ -113,3 +113,14 @@ NEXT_PUBLIC_DATA_MODE=mock or real; default mock. NEXT_PUBLIC_API_BASE_URL=http:
 
 ## Implementation and validation status
 Phase 0-2 foundation is implemented under frontend/. The final lint, strict typecheck, 42 adapter/integrity/lifecycle tests and production build passed. Local HTTP and Chrome baseline checks passed. See [implementation record](IMPLEMENTATION_PHASE_0_2.md) for exact files, manual checks and limitations. No Dev 1 approval or real backend integration is implied. Polling hook, SSE, export and full research UI remain later phases.
+
+## PR-readiness audit follow-up (24 October 2026 WIB)
+The previously missing docs/MASTER_SPEC.md now provides a navigation entry point to the unchanged versioned specification. Phase 0 notes above describe the original audit, not current Git state. The pushed Phase 0-2 root commit is 8db0fb9 on main; remote main matched local HEAD when checked. feat/frontend and dev did not exist locally or remotely, so the intended PR comparison is blocked pending team branch setup. No branches, commits, pushes or PRs were created during the audit.
+
+Phase 2 follow-up fixes reject impossible UTC calendar timestamps and dot-segment run IDs before fetch can normalize the endpoint. Valid leap days, UTC minute precision and backend microsecond timestamps remain accepted. No wire fields or endpoint names changed. Detailed audit findings and suggested PR text are in PR_READINESS.md.
+
+## Approved Git workflow follow-up
+After the audit, the user approved dev based on existing main (8db0fb9), feat/frontend based on dev, and a commit/push of these audit fixes on feat/frontend. main is preserved. Both dev and feat/frontend contain the initial Phase 0-2 implementation; their PR difference consists only of audit fixes and documentation. feat/backend remains Dev 1 ownership. No merge or automatic PR creation is performed.
+
+## Phase 3 demo-only submission
+The landing now creates mock research requests and navigates to a minimal /research/{id} receipt. The provisional frontend demo limit is 10-500 trimmed characters; this does not establish backend limits or Dev 1 approval. A Phase 3 guard rejects non-mock modes before transport use; it never calls a real backend or silently falls back. The shared adapter preserves in-memory runs across client navigation only. Reloading displays an honest unavailable-session message. No polling/workbench/report UI is included. See IMPLEMENTATION_PHASE_3.md for actual checks and remaining decisions.
