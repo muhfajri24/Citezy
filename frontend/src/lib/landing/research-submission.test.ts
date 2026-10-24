@@ -95,6 +95,14 @@ describe("submission lifecycle", () => {
 });
 
 describe("Phase 3 transport boundary", () => {
+    it("permits a new request when a preserved landing form is shown again", async () => {
+        const api = new MockResearchApi();
+        const submission = createSubmissionController(() => api, vi.fn());
+        expect((await submission.submit(question)).kind).toBe("started");
+        expect((await submission.submit(question)).kind).toBe("busy");
+        submission.reset();
+        expect((await submission.submit(question)).kind).toBe("started");
+    });
     it("shares one mock instance for creation and receipt lookup", async () => {
         vi.stubEnv("NEXT_PUBLIC_DATA_MODE", "mock");
         const api = getDemoResearchApi();

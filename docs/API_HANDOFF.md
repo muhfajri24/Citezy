@@ -124,3 +124,6 @@ After the audit, the user approved dev based on existing main (8db0fb9), feat/fr
 
 ## Phase 3 demo-only submission
 The landing now creates mock research requests and navigates to a minimal /research/{id} receipt. The provisional frontend demo limit is 10-500 trimmed characters; this does not establish backend limits or Dev 1 approval. A Phase 3 guard rejects non-mock modes before transport use; it never calls a real backend or silently falls back. The shared adapter preserves in-memory runs across client navigation only. Reloading displays an honest unavailable-session message. No polling/workbench/report UI is included. See IMPLEMENTATION_PHASE_3.md for actual checks and remaining decisions.
+
+## Phase 4 mock workbench follow-up
+The existing research route now renders six functional tabs and visibility-aware GET polling. This supersedes the Phase 3 receipt-only UI description above. Wire models, routes and real transport remain unchanged. UI still requires mock mode; real integration and question/polling policies remain pending Dev 1 approval. See IMPLEMENTATION_PHASE_4.md for exact behavior, checks and limitations.

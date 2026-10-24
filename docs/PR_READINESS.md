@@ -96,3 +96,9 @@ Base: dev. Head: feat/frontend. Both already include the initial Phase 0-2 found
 
 The API contract remains provisional pending Dev 1 approval of OpenAPI, terminal semantics, input limits, retention, CORS, error responses and polling policy. No live backend integration has been verified.
 ```
+
+## Phase 3 merge and Phase 4 local work (24 October 2026)
+
+Phase 3 commit `9062d67` was pushed to `origin/feat/frontend`. PR [#22](https://github.com/muhfajri24/Citezy/pull/22) was merged into `dev` by explicit user instruction, merge commit `24e3d29`. GitHub reported no conflicts. `main` was not modified. The active working branch is still `feat/frontend`, fast-forwarded to that merge before Phase 4.
+
+Phase 4 functional mock workspace changes are prepared for commit and push on `feat/frontend` following user approval; no Phase 4 merge is authorized. See [Phase 4 report](IMPLEMENTATION_PHASE_4.md) for the navigation audit, actual verification and remaining integration boundaries. Existing local `frontend/next-env.d.ts` and `frontend/package-lock.json` changes were preserved. Do not treat the historical Phase 0-2 PR-blocker notes above as current branch state.
