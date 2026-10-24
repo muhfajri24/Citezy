@@ -41,3 +41,9 @@ See [interactive implementation and QA record](../docs/IMPLEMENTATION_PHASE_3_LI
 Use mock mode, submit a question, and follow adapter status in Activity (about 12 seconds to complete). Overview counts open Sources/Evidence; source detail links select matching evidence; report citations open an accessible inspector. Comparison supports sorting and expandable method details. Arrow keys/Home/End navigate workspace tabs; filters and selections persist across tabs. New research returns to an enabled form. No new libraries were added.
 
 See [Phase 4 implementation and manual QA](../docs/IMPLEMENTATION_PHASE_4.md), including the navigation audit, test results, screenshots, known browser-automation limitation and remaining live-integration requirements. Phase 4 is prepared for review on `feat/frontend`; no Phase 4 merge is authorized.
+
+## Phase 4.5 - visual dan interaksi
+
+Landing kini memiliki komposisi editorial baru dan Evidence Constellation interaktif. Pilih node untuk menelusuri Question -> Claim -> Excerpt -> Source; pada mobile graph menjadi grid tombol. Workspace memiliki sidebar collapse/expand, drawer navigasi mobile dan kontrol tutup/buka panel evidence. Klik klaim laporan dapat membuka inspector melalui ID evidence yang tersedia. Semua data tetap DEMO ONLY; adapter dan kontrak API tidak berubah, tanpa dependency baru.
+
+Lihat [laporan Phase 4.5](../docs/IMPLEMENTATION_PHASE_4_5.md) untuk audit, file, cara mencoba, hasil pengujian, screenshot dan batasan. Implementasi disiapkan untuk review pada feat/frontend; merge membutuhkan instruksi terpisah.

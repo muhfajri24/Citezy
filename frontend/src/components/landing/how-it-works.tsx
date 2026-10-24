@@ -46,6 +46,7 @@ export function HowItWorks({ run }: { run: ResearchRun }) {
             </li>)}</ol>
             <div className="story-panel">
                 <div className="story-panel-heading"><span><MarkIcon /> A FICTIONAL RESEARCH TRAIL</span><Badge className="demo-badge">DEMO</Badge></div>
+                <div className="story-trace" aria-hidden="true">{["Ask", "Search", "Read", "Check", "Report"].map((label, index) => <span key={label} className={index <= active ? "trace-reached" : ""}><i />{label}</span>)}</div>
                 <div className="story-stage-controls" role="group" aria-label="Explore research stages">{STORY_STAGES.map((stage, index) => <button type="button" key={stage.id} aria-pressed={active === index} aria-controls="story-visual" onClick={() => choose(index)}>{stage.label}</button>)}</div>
                 <div id="story-visual" className="story-visual" role="region" tabIndex={0} aria-label={`${STORY_STAGES[active].label} stage illustration`}>
                     <div key={active} className="story-visual-content"><StoryVisual stage={STORY_STAGES[active].id} run={run} /></div>
