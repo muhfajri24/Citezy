@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Alert, Badge, Button, Textarea } from "@/components/ui";
 import { getDemoResearchApi } from "@/lib/api/demo-client";
@@ -14,6 +14,11 @@ export function ResearchInput() {
     const [pending, setPending] = useState(false);
     const textarea = useRef<HTMLTextAreaElement>(null);
     const submission = useMemo(() => createSubmissionController(getDemoResearchApi, (path) => router.push(path)), [router]);
+    useEffect(() => {
+        let active = true;
+        queueMicrotask(() => { if (active) { submission.reset(); setPending(false); } });
+        return () => { active = false; };
+    }, [submission]);
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();

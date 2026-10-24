@@ -30,6 +30,8 @@ export function createSubmissionController(
 ) {
     let pending = false;
     return {
+        /** React can preserve a landing page when navigating away; release its lock when it is shown again. */
+        reset() { pending = false; },
         async submit(value: string): Promise<SubmissionResult> {
             if (pending) return { kind: "busy" };
             const validation = validateQuestion(value);
