@@ -2,11 +2,9 @@
 import { useId, useLayoutEffect, useRef, useState } from "react";
 import type { ResearchRun } from "@/types/research";
 import { buildEvidenceGraph, traceSelection } from "@/lib/research/constellation";
-import { resolveEvidence } from "@/lib/utils/integrity";
-import { ASSESSMENT_LABELS } from "@/lib/landing/interaction-model";
-import { SourceLink } from "@/components/research/views";
+import { ClaimInspector, SourceDetails } from "./claim-inspector";
 
-export function EvidenceConstellation({ run, compact = false }: { run: ResearchRun; compact?: boolean }) {
+export function EvidenceConstellation({ run, compact = false, onInspect, onSource }: { run: ResearchRun; compact?: boolean; onInspect?: (claim: string, evidence?: string) => void; onSource?: (source: string) => void }) {
     const graph = buildEvidenceGraph(run);
     const [selection, setSelection] = useState("question");
     const selected = graph.nodes.find(node => node.key === selection) ?? graph.nodes[0];
@@ -15,12 +13,8 @@ export function EvidenceConstellation({ run, compact = false }: { run: ResearchR
     const panelId = useId();
     const detail = useRef<HTMLDivElement>(null);
     useLayoutEffect(() => { if (detail.current) detail.current.scrollTop = 0; }, [selected.key]);
-    const claim = run.report?.claims.find(c => c.id === selected.id && selected.kind === "claim");
-    const record = selected.kind === "evidence"
-        ? run.evidence.find(e => e.id === selected.id)
-        : claim ? run.evidence.find(e => claim.evidence_ids.includes(e.id) && e.claim_id === claim.id && graph.nodes.some(node => node.key === `evidence:${e.id}`)) : null;
-    const resolution = record && resolveEvidence(run, record.claim_id, record.id);
-    const source = selected.kind === "source" ? run.sources.find(s => s.id === selected.id) : null;
+    const claim = selected.kind === "claim" ? run.report?.claims.find(c => c.id === selected.id) : undefined;
+    const record = selected.kind === "evidence" ? run.evidence.find(e => e.id === selected.id) : undefined;
     const selectedPath = selected.kind !== "question" ? graph.paths.find(path => path.length === 4 && path.includes(selected.key)) : undefined;
     return <div className={`constellation ${compact ? "constellation-compact" : ""}`}>
         <div className="constellation-heading"><span className="section-kicker">THE EVIDENCE CONSTELLATION</span><span className="constellation-demo">DEMO ONLY</span></div>
@@ -44,7 +38,7 @@ export function EvidenceConstellation({ run, compact = false }: { run: ResearchR
                 }}><span className="node-symbol" aria-hidden="true">{node.kind === "question" ? "?" : node.kind === "claim" ? "◇" : node.kind === "evidence" ? "≡" : "↗"}</span><span>{node.label}<small>{node.kind === "question" ? "START HERE" : node.id}</small></span></button>)}
             </div>
         </>}
-        <div ref={detail} id={panelId} className="constellation-detail" aria-live="polite" aria-atomic="true"><div key={selected.key} className="constellation-detail-content">{selectedPath && <div className="constellation-trail" aria-label="One connected evidence path">{selectedPath.map((key, index) => <span key={key}>{index > 0 && <i aria-hidden="true">→</i>}{key === "question" ? "Question" : key.split(":").slice(1).join(":")}</span>)}</div>}<span className="section-kicker">{selected.kind.toUpperCase()} / {selected.kind === "question" ? "THE STARTING POINT" : selected.id}</span><p>{selected.text}</p>{claim && <span className={`constellation-assessment assessment-${claim.assessment}`}>{ASSESSMENT_LABELS[claim.assessment]}</span>}{resolution && (resolution.available ? <><blockquote>{resolution.evidence.excerpt}</blockquote><p>{resolution.evidence.explanation ?? "No explanation supplied."}</p><SourceLink source={resolution.source} /></> : <p>Excerpt unavailable. No source text can be shown.</p>)}{source && <><p>Access: {source.access_status ?? "unknown"}</p><SourceLink source={source} /></>}<small>{connected.size > 0 ? `${connected.size} connected nodes` : "No resolved connections"} · {graph.omitted ? `First 12 claims shown; ${graph.omitted} more in the claim ledger.` : "Only supplied relationships are shown."}</small></div></div>
+        <div ref={detail} id={panelId} className="constellation-detail" aria-live="polite" aria-atomic="true"><div key={selected.key} className="constellation-detail-content">{selectedPath && <div className="constellation-trail" aria-label="One connected evidence path">{selectedPath.map((key, index) => <span key={key}>{index > 0 && <i aria-hidden="true">→</i>}{key === "question" ? "Question" : key.split(":").slice(1).join(":")}</span>)}</div>}<span className="section-kicker">{selected.kind.toUpperCase()} / {selected.kind === "question" ? "THE STARTING POINT" : selected.id}</span>{selected.kind === "question" && <p>{selected.text}</p>}{(claim || record) && <><ClaimInspector run={run} claimId={claim?.id ?? record!.claim_id} evidenceId={record?.id} onSource={onSource} />{onInspect && <button className="citation" onClick={() => onInspect(claim?.id ?? record!.claim_id, record?.id)}>Open claim inspector</button>}</>}{selected.kind === "source" && <SourceDetails run={run} sourceId={selected.id} onEvidence={onInspect} />}<small>{connected.size > 0 ? `${connected.size} connected nodes` : "No resolved connections"} · {graph.omitted ? `First 12 claims shown; ${graph.omitted} more in the claim ledger.` : "Only supplied relationships are shown."}</small></div></div>
         <p className="constellation-help">Click a node or use arrow keys to trace it. All demonstration sources and excerpts are fictional.</p>
     </div>;
 }

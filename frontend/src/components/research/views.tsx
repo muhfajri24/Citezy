@@ -1,19 +1,16 @@
 "use client";
 import { Badge, Button, Card } from "@/components/ui";
 import { ASSESSMENT_LABELS } from "@/lib/landing/interaction-model";
-import { claimCounts, safeSourceUrl, type WorkspaceTab } from "@/lib/research/workspace-model";
-import { resolveEvidence } from "@/lib/utils/integrity";
-import type { ResearchClaim, ResearchRun, ResearchSource } from "@/types/research";
+import { claimCounts, type WorkspaceTab } from "@/lib/research/workspace-model";
+import { ClaimInspector } from "@/components/evidence/claim-inspector";
+export { SourceLink } from "@/components/evidence/claim-inspector";
+import type { ResearchClaim, ResearchRun } from "@/types/research";
 
 export function Empty({ children }: { children: React.ReactNode }) {
     return <div className="workspace-empty"><span aria-hidden="true">↗</span><p>{children}</p><p className="workspace-muted">Available data will appear here when returned by the adapter.</p></div>;
 }
 export function Assessment({ claim }: { claim: ResearchClaim }) {
     return <Badge className={`assessment assessment-${claim.assessment}`}>{ASSESSMENT_LABELS[claim.assessment]}</Badge>;
-}
-export function SourceLink({ source }: { source: ResearchSource }) {
-    const url = safeSourceUrl(source.url);
-    return url ? <a className="workspace-link" href={url} target="_blank" rel="noopener noreferrer">Open original source ↗<span className="sr-only"> (opens in a new tab)</span></a> : <p>Original URL unavailable.</p>;
 }
 export function Overview({ run, navigate }: { run: ResearchRun; navigate: (tab: WorkspaceTab) => void }) {
     const counts = claimCounts(run);
@@ -28,20 +25,10 @@ export function Overview({ run, navigate }: { run: ResearchRun; navigate: (tab: 
         <Card><p className="workspace-eyebrow">EVIDENCE AT A GLANCE</p><h2>Support, with context.</h2><dl className="workspace-distribution">{Object.entries(counts).map(([status, count]) => <div key={status}><dt>{ASSESSMENT_LABELS[status as keyof typeof counts]}</dt><dd>{count}</dd></div>)}</dl><p className="workspace-muted">Source support is not independent fact-checking.</p><Button onClick={() => navigate("Evidence")}>Inspect claims</Button></Card></div>
     </>;
 }
-export function EvidenceDetail({ run, claimId, evidenceId }: { run: ResearchRun; claimId: string; evidenceId?: string }) {
-    const matches = (run.report?.claims ?? []).filter(c => c.id === claimId);
-    const claim = matches.length === 1 ? matches[0] : null;
-    if (!claim) return <Empty>Select an available claim to inspect its evidence.</Empty>;
-    const ids = evidenceId ? [evidenceId] : claim.evidence_ids;
-    return <><p className="workspace-eyebrow">EVIDENCE INSPECTOR · {claim.id}</p><h3>{claim.text}</h3><Assessment claim={claim} />{claim.explanation && <p>{claim.explanation}</p>}
-        {!ids.length && <Empty>No evidence was supplied for this claim.</Empty>}
-        {ids.map(id => { const resolved = resolveEvidence(run, claim.id, id); return <section key={id} className="evidence-record" aria-label={`Evidence ${id}`}>
-            {!resolved.available ? <p role="status">Evidence unavailable ({resolved.reason.replaceAll("_", " ")}). No excerpt can be shown.</p> : <><p className="workspace-eyebrow">{resolved.source.title}</p><blockquote>{resolved.evidence.excerpt}</blockquote><p>{resolved.evidence.explanation ?? "No explanation was supplied."}</p><p className="workspace-muted">Access: {resolved.source.access_status ?? "unknown"} · {resolved.source.domain ?? "Domain not reported"}</p><SourceLink source={resolved.source} /></>}
-        </section>; })}<p className="workspace-caveat">Source support is not independent fact-checking. DEMO ONLY: these sources and excerpts are fictional.</p></>;
-}
+export const EvidenceDetail = ClaimInspector;
 export function Report({ run, selectedClaim, selectClaim, inspect }: { run: ResearchRun; selectedClaim: string; selectClaim: (id: string) => void; inspect: (claim: string, evidence: string) => void }) {
     if (!run.report) return <Empty>No report is available for this run.</Empty>;
-    return <article className="workspace-report"><p className="workspace-eyebrow">RESEARCH REPORT · DEMO ONLY</p><h2>{run.question}</h2><nav aria-label="Report sections"><a href="#report-summary">Summary</a><a href="#report-claims">Claims</a></nav><section id="report-summary"><h3>Summary</h3><p className="report-summary">{run.report.summary}</p></section><section id="report-claims"><h3>Claims & source support</h3>{!run.report.claims.length && <Empty>No claims were returned.</Empty>}{run.report.claims.map(claim => <div key={claim.id} className={`report-claim ${selectedClaim === claim.id ? "is-selected" : ""}`}><button className="claim-text" aria-pressed={selectedClaim === claim.id} onClick={() => selectClaim(claim.id)}>{claim.text}</button><Assessment claim={claim} /><div className="citation-list">{claim.evidence_ids.map(id => <button key={id} className="citation" onClick={() => inspect(claim.id, id)} aria-label={`Inspect evidence ${id} for claim ${claim.id}`}>[{id}]</button>)}{!claim.evidence_ids.length && <span>No evidence supplied</span>}</div></div>)}</section></article>;
+    return <article className="workspace-report"><p className="workspace-eyebrow">RESEARCH REPORT · DEMO ONLY</p><h2>{run.question}</h2><nav aria-label="Report sections"><a href="#report-summary">Summary</a><a href="#report-claims">Claims</a></nav><section id="report-summary"><h3>Summary</h3><p className="report-summary">{run.report.summary}</p></section><section id="report-claims"><h3>Claims & source support</h3>{!run.report.claims.length && <Empty>No claims were returned.</Empty>}{run.report.claims.map((claim, index) => <div key={`${claim.id}:${index}`} className={`report-claim ${selectedClaim === claim.id ? "is-selected" : ""}`}><button className="claim-text" aria-pressed={selectedClaim === claim.id} onClick={() => selectClaim(claim.id)}>{claim.text}</button><Assessment claim={claim} /><div className="citation-list">{[...new Set(claim.evidence_ids)].map(id => <button key={id} className="citation" onClick={() => inspect(claim.id, id)} aria-label={`Inspect evidence ${id} for claim ${claim.id}`}>[{id}]</button>)}{!claim.evidence_ids.length && <span>No evidence supplied</span>}</div></div>)}</section></article>;
 }
 export function Activity({ run }: { run: ResearchRun }) {
     const completed = run.steps.filter(step => step.status === "done").length;
