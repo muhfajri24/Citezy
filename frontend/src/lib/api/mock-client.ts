@@ -4,6 +4,7 @@ import { ResearchApiError } from "./errors";
 import type { ResearchApi } from "./interface";
 type Outcome = "completed" | "partial" | "failed" | "cancelled";
 export interface MockOptions {
+    createId?: () => string;
     now?: () => number;
     stageDurationMs?: number;
     outcome?: Outcome;
@@ -17,10 +18,12 @@ export class MockResearchApi implements ResearchApi {
     private readonly now: () => number;
     private readonly duration: number;
     private readonly outcome: Outcome;
+    private readonly createId: () => string;
     constructor(options: MockOptions = {}) {
         this.now = options.now ?? Date.now;
         this.duration = options.stageDurationMs ?? 2000;
         this.outcome = options.outcome ?? "completed";
+        this.createId = options.createId ?? (() => `demo-${++this.counter}`);
         if (!Number.isFinite(this.duration) || this.duration <= 0)
             throw new Error("Mock stage duration must be positive.");
     }
@@ -28,7 +31,7 @@ export class MockResearchApi implements ResearchApi {
         const question = request.question.trim();
         if (!question)
             throw new ResearchApiError("VALIDATION_ERROR", "Please enter a research question.", 400);
-        const id = `demo-${++this.counter}`;
+        const id = this.createId();
         this.runs.set(id, { question, started: this.now() });
         return { id, status: "queued" };
     }

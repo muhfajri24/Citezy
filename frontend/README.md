@@ -52,3 +52,9 @@ Lihat [laporan Phase 4.5](../docs/IMPLEMENTATION_PHASE_4_5.md) untuk audit, file
 Motion disatukan dengan token 140/220/360ms, hero berinterpolasi dengan beberapa layer, progres scroll narasi, reveal jalur graph, indikator tab bergerak, FLIP sidebar, transisi dialog/drawer dan panel evidence dengan tinggi tetap. Input menandai contoh terpilih; Source Explorer mengumumkan jumlah hasil; Activity menghitung progress dari step adapter, bukan confidence atau progress buatan.
 
 Fallback route memakai loading.tsx Next.js asli. Semua data tetap DEMO ONLY. Tidak ada library baru, backend atau kontrak API yang diubah. Lihat [laporan Phase 4.6](../docs/IMPLEMENTATION_PHASE_4_6.md) untuk file, pengujian, batasan dan cara mencoba. Implementasi Phase 4.6 siap direview pada feat/frontend; merge memerlukan instruksi terpisah.
+
+## Phase 6 - Demo reliability
+
+Mock browser runs now keep up to five versioned fictional snapshots in sessionStorage for this tab. The original question is never saved; restored pages display a generic DEMO ONLY question. Active snapshots are frozen after reload and offer a new-demo action. Storage failure preserves in-memory use. Real mode never uses this storage wrapper and the current UI remains mock-only pending Dev 1 integration.
+
+For development-only multi-excerpt QA, run npm.cmd run dev and open /dev/evidence. Production returns 404 for that route. See [Phase 6 report](../docs/IMPLEMENTATION_PHASE_6.md) and [integration readiness](../docs/INTEGRATION_READINESS.md) for actual checks and remaining limitations.
