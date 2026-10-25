@@ -5,7 +5,7 @@ import type { ResearchRun } from "@/types/research";
 
 export interface RunSnapshot { run: ResearchRun | null; error: string | null; loading: boolean; paused: boolean }
 /** Sequential GET polling; visibility, disposal and terminal results stop pending work. */
-export function createRunPoller(api: ResearchApi, id: string, publish: (state: RunSnapshot) => void) {
+export function createRunPoller(api: ResearchApi, id: string, publish: (state: RunSnapshot) => void, shouldContinue = () => true) {
     let state: RunSnapshot = { run: null, error: null, loading: true, paused: false };
     let timer: ReturnType<typeof setTimeout> | undefined;
     let controller: AbortController | undefined;
@@ -23,7 +23,7 @@ export function createRunPoller(api: ResearchApi, id: string, publish: (state: R
             if (disposed || token !== generation) return;
             failures = 0;
             emit({ run, error: null, loading: false });
-            if (!isTerminal(run.status)) delay = 2000;
+            if (!isTerminal(run.status) && shouldContinue()) delay = 2000;
         } catch (error) {
             if (disposed || token !== generation) return;
             const known = error instanceof ResearchApiError;

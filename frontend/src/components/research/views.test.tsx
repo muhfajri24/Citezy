@@ -2,8 +2,23 @@ import { describe, expect, it } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
 import { createDemoRun } from "@/lib/mock/fixture";
 import { Activity, EvidenceDetail, Overview, Report, SourceLink } from "./views";
+import LoadingResearchWorkspace from "@/app/research/[id]/loading";
 const fixture = () => createDemoRun("demo", "Compare methods", "2026-10-24T00:00:00Z");
 describe("data-backed workspace views", () => {
+    it("route fallback announces interface loading without inventing run progress", () => {
+        const html = renderToStaticMarkup(<LoadingResearchWorkspace />);
+        expect(html).toContain('aria-busy="true"'); expect(html).toContain("Research status will appear when the run is loaded"); expect(html).not.toContain("<progress");
+    });
+    it("reports returned stage completion without inventing confidence", () => {
+        const run = fixture(); run.status = "failed"; run.steps[4].status = "failed";
+        const html = renderToStaticMarkup(<Activity run={run} />);
+        expect(html).toContain("4 of 5 stages done"); expect(html).toContain('max="5" value="4"'); expect(html).toContain("not a confidence score");
+    });
+    it("does not invent stage progress when the adapter returns no steps", () => {
+        const run = fixture(); run.steps = [];
+        const html = renderToStaticMarkup(<Activity run={run} />);
+        expect(html).not.toContain("<progress"); expect(html).toContain("No stage details were returned");
+    });
     it("renders counts, summary and real quick-action labels", () => { const html = renderToStaticMarkup(<Overview run={fixture()} navigate={() => {}} />); expect(html).toContain("Sources ↗"); expect(html).toContain("Claims ↗"); expect(html).toContain("5/5"); });
     it("renders selected report claim and accessible evidence actions", () => { const html = renderToStaticMarkup(<Report run={fixture()} selectedClaim="c2" selectClaim={() => {}} inspect={() => {}} />); expect(html).toContain("report-claim is-selected"); expect(html).toContain("Inspect evidence e2 for claim c2"); });
     it("shows the selected claim's excerpt, without leaking another claim's excerpt", () => { const html = renderToStaticMarkup(<EvidenceDetail run={fixture()} claimId="c2" />); expect(html).toContain("Birch reduced latency in one small synthetic trial"); expect(html).not.toContain("Cedar scored 72 percent recall"); expect(html).toContain("Partially supported"); });

@@ -47,7 +47,7 @@ export function createSubmissionController(
                     kind: "error",
                     message: error instanceof ResearchApiError && error.error.code === "DEMO_MODE_REQUIRED"
                         ? "This preview only supports demo mode. Restart the app in mock mode to create a simulated request."
-                        : "We couldn't create your demo request. Your question is still here. Please try again.",
+                        : "We couldn't create your research request. Your question is still here. Please try again.",
                 };
             }
         },

@@ -9,4 +9,4 @@ export function Textarea({ className, ...props }: ComponentPropsWithRef<"textare
 export function Card({ className, ...props }: HTMLAttributes<HTMLDivElement>) { return <div className={classes("rounded-2xl border border-border bg-surface p-6", className)} {...props}/>; }
 export function Badge({ className, ...props }: HTMLAttributes<HTMLSpanElement>) { return <span className={classes("inline-flex rounded-full border border-border px-3 py-1 text-xs font-semibold", className)} {...props}/>; }
 export function Alert({ className, role = "status", ...props }: HTMLAttributes<HTMLDivElement>) { return <div role={role} className={classes("rounded-xl border border-border bg-paper p-4 text-sm", className)} {...props}/>; }
-export function Skeleton({ className, ...props }: HTMLAttributes<HTMLDivElement>) { return <div aria-hidden="true" className={classes("h-5 animate-pulse rounded bg-border", className)} {...props}/>; }
+export function Skeleton({ className, ...props }: HTMLAttributes<HTMLDivElement>) { return <div aria-hidden="true" className={classes("h-5 animate-pulse motion-reduce:animate-none rounded bg-border", className)} {...props}/>; }

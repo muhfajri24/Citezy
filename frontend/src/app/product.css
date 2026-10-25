@@ -1,0 +1,24 @@
+.product-home .product-intro {max-width:900px;padding-top:32px;padding-bottom:20px}
+.product-home .product-intro h1 {font-size:clamp(30px,4vw,52px);line-height:1.1;letter-spacing:-.04em;margin:16px 0}
+.product-intro h1 em {color:var(--color-lime);font-family:Georgia,serif;font-weight:400}
+.product-intro>p:last-child {color:#bcbcc5;font-size:16px}
+.landing-overhaul.product-home .research-section {max-width:900px;padding-top:0;padding-bottom:16px}
+.landing-overhaul.product-home .research-panel {display:flex;flex-direction:column;padding:24px;gap:12px}
+.landing-overhaul.product-home .research-heading {position:static;display:flex;justify-content:space-between;gap:12px}
+.landing-overhaul.product-home .research-panel h2 {font-size:20px;margin:0;max-width:none}
+.landing-overhaul.product-home .research-panel form {width:100%;grid-column:auto;grid-row:auto}
+.landing-overhaul.product-home .research-textarea {min-height:112px}
+.landing-overhaul.product-home .example-questions {margin:0;padding-top:12px}
+.landing-overhaul.product-home .example-questions>div {display:flex;flex-direction:row;flex-wrap:wrap;align-items:stretch;gap:8px}
+.landing-overhaul.product-home .research-panel::before {display:none}
+.landing-overhaul.product-home .research-heading {width:100%;max-width:none}
+@media(max-width:600px){.product-home .product-intro{padding-top:12px;padding-bottom:12px}.product-home .product-intro h1{margin:10px 0}.product-home .product-intro .section-kicker{font-size:8px}.landing-overhaul.product-home .research-heading .section-kicker{display:none}.landing-overhaul.product-home .research-panel h2{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}.landing-overhaul.product-home .research-panel{gap:6px}.landing-overhaul.product-home .research-textarea{min-height:100px}}
+.landing-overhaul.product-home .example-questions button {width:auto;flex:1 1 180px;min-height:44px;white-space:normal}
+.product-workflow {max-width:900px;padding-bottom:36px;font-size:14px;color:#bcbcc5}
+.product-workflow a {display:inline-block;color:var(--color-lime);padding:12px 0}
+.about-explanation {padding-top:50px;padding-bottom:50px;line-height:1.8;max-width:960px}
+.about-explanation h2 {font-size:28px;margin:24px 0 12px}
+.about-explanation dt {color:var(--color-lime);margin-top:18px}
+.about-explanation dd {margin-left:0;color:#bcbcc5}
+.landing-nav a[aria-current=page] {color:var(--color-lime)}
+@media(max-width:600px){.product-home .product-intro{padding-top:20px}.landing-overhaul.product-home .research-panel{padding:16px}.landing-overhaul.product-home .research-heading .section-kicker{font-size:9px}.landing-overhaul.product-home .research-submit-row{flex-direction:column;align-items:stretch;gap:12px}.landing-overhaul.product-home .research-submit{width:100%}.landing-overhaul.product-home .research-heading{flex-wrap:wrap}.product-home .example-help{margin:4px 0}}

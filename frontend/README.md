@@ -41,3 +41,20 @@ See [interactive implementation and QA record](../docs/IMPLEMENTATION_PHASE_3_LI
 Use mock mode, submit a question, and follow adapter status in Activity (about 12 seconds to complete). Overview counts open Sources/Evidence; source detail links select matching evidence; report citations open an accessible inspector. Comparison supports sorting and expandable method details. Arrow keys/Home/End navigate workspace tabs; filters and selections persist across tabs. New research returns to an enabled form. No new libraries were added.
 
 See [Phase 4 implementation and manual QA](../docs/IMPLEMENTATION_PHASE_4.md), including the navigation audit, test results, screenshots, known browser-automation limitation and remaining live-integration requirements. Phase 4 is prepared for review on `feat/frontend`; no Phase 4 merge is authorized.
+
+## Phase 4.5 - visual dan interaksi
+
+Landing kini memiliki komposisi editorial baru dan Evidence Constellation interaktif. Pilih node untuk menelusuri Question -> Claim -> Excerpt -> Source; pada mobile graph menjadi grid tombol. Workspace memiliki sidebar collapse/expand, drawer navigasi mobile dan kontrol tutup/buka panel evidence. Klik klaim laporan dapat membuka inspector melalui ID evidence yang tersedia. Semua data tetap DEMO ONLY; adapter dan kontrak API tidak berubah, tanpa dependency baru.
+
+Lihat [laporan Phase 4.5](../docs/IMPLEMENTATION_PHASE_4_5.md) untuk audit, file, cara mencoba, hasil pengujian, screenshot dan batasan. Implementasi disiapkan untuk review pada feat/frontend; merge membutuhkan instruksi terpisah.
+## Phase 4.6 - Living Interface 2.0
+
+Motion disatukan dengan token 140/220/360ms, hero berinterpolasi dengan beberapa layer, progres scroll narasi, reveal jalur graph, indikator tab bergerak, FLIP sidebar, transisi dialog/drawer dan panel evidence dengan tinggi tetap. Input menandai contoh terpilih; Source Explorer mengumumkan jumlah hasil; Activity menghitung progress dari step adapter, bukan confidence atau progress buatan.
+
+Fallback route memakai loading.tsx Next.js asli. Semua data tetap DEMO ONLY. Tidak ada library baru, backend atau kontrak API yang diubah. Lihat [laporan Phase 4.6](../docs/IMPLEMENTATION_PHASE_4_6.md) untuk file, pengujian, batasan dan cara mencoba. Implementasi Phase 4.6 siap direview pada feat/frontend; merge memerlukan instruksi terpisah.
+
+## Phase 6 - Demo reliability
+
+Mock browser runs now keep up to five versioned fictional snapshots in sessionStorage for this tab. The original question is never saved; restored pages display a generic DEMO ONLY question. Active snapshots are frozen after reload and offer a new-demo action. Storage failure preserves in-memory use. Real mode never uses this storage wrapper and the current UI remains mock-only pending Dev 1 integration.
+
+For development-only multi-excerpt QA, run npm.cmd run dev and open /dev/evidence. Production returns 404 for that route. See [Phase 6 report](../docs/IMPLEMENTATION_PHASE_6.md) and [integration readiness](../docs/INTEGRATION_READINESS.md) for actual checks and remaining limitations.
