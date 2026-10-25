@@ -11,6 +11,13 @@ function setup() {
     return { storage, memory, api: new DemoSessionApi(memory(), () => storage), setRaw: (value: string) => { raw = value; }, raw: () => raw!, advance: () => { now += 6; } };
 }
 describe("versioned fictional demo sessions", () => {
+    it("does not repeat storage writes for an unchanged terminal snapshot", async () => {
+        const f = setup(); const { id } = await f.api.startRun({ question: "Fictional test" });
+        f.advance(); await f.api.getRun(id);
+        const writes = f.storage.setItem.mock.calls.length;
+        await f.api.getRun(id); await f.api.getRun(id);
+        expect(f.storage.setItem).toHaveBeenCalledTimes(writes);
+    });
     it("saves a validated snapshot without storing the original question", async () => {
         const f = setup(); const { id } = await f.api.startRun({ question: "PRIVATE question not for storage" });
         expect(f.raw()).not.toContain("PRIVATE"); expect(f.raw()).toContain(RESTORED_QUESTION);

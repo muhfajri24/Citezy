@@ -1,11 +1,11 @@
 "use client";
-import { useId, useLayoutEffect, useRef, useState } from "react";
+import { useId, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { ResearchRun } from "@/types/research";
 import { buildEvidenceGraph, traceSelection } from "@/lib/research/constellation";
 import { ClaimInspector, SourceDetails } from "./claim-inspector";
 
 export function EvidenceConstellation({ run, compact = false, onInspect, onSource }: { run: ResearchRun; compact?: boolean; onInspect?: (claim: string, evidence?: string) => void; onSource?: (source: string) => void }) {
-    const graph = buildEvidenceGraph(run);
+    const graph = useMemo(() => buildEvidenceGraph(run), [run]);
     const [selection, setSelection] = useState("question");
     const selected = graph.nodes.find(node => node.key === selection) ?? graph.nodes[0];
     const connected = traceSelection(graph, selected.key);
@@ -38,7 +38,7 @@ export function EvidenceConstellation({ run, compact = false, onInspect, onSourc
                 }}><span className="node-symbol" aria-hidden="true">{node.kind === "question" ? "?" : node.kind === "claim" ? "◇" : node.kind === "evidence" ? "≡" : "↗"}</span><span>{node.label}<small>{node.kind === "question" ? "START HERE" : node.id}</small></span></button>)}
             </div>
         </>}
-        <div ref={detail} id={panelId} className="constellation-detail" aria-live="polite" aria-atomic="true"><div key={selected.key} className="constellation-detail-content">{selectedPath && <div className="constellation-trail" aria-label="One connected evidence path">{selectedPath.map((key, index) => <span key={key}>{index > 0 && <i aria-hidden="true">→</i>}{key === "question" ? "Question" : key.split(":").slice(1).join(":")}</span>)}</div>}<span className="section-kicker">{selected.kind.toUpperCase()} / {selected.kind === "question" ? "THE STARTING POINT" : selected.id}</span>{selected.kind === "question" && <p>{selected.text}</p>}{(claim || record) && <><ClaimInspector run={run} claimId={claim?.id ?? record!.claim_id} evidenceId={record?.id} onSource={onSource} />{onInspect && <button className="citation" onClick={() => onInspect(claim?.id ?? record!.claim_id, record?.id)}>Open claim inspector</button>}</>}{selected.kind === "source" && <SourceDetails run={run} sourceId={selected.id} onEvidence={onInspect} />}<small>{connected.size > 0 ? `${connected.size} connected nodes` : "No resolved connections"} · {graph.omitted ? `First 12 claims shown; ${graph.omitted} more in the claim ledger.` : "Only supplied relationships are shown."}</small></div></div>
+        <p className="sr-only" role="status">{selected.label} {selected.id} selected. {connected.size} connected nodes.</p><div ref={detail} id={panelId} className="constellation-detail"><div key={selected.key} className="constellation-detail-content">{selectedPath && <div className="constellation-trail" aria-label="One connected evidence path">{selectedPath.map((key, index) => <span key={key}>{index > 0 && <i aria-hidden="true">→</i>}{key === "question" ? "Question" : key.split(":").slice(1).join(":")}</span>)}</div>}<span className="section-kicker">{selected.kind.toUpperCase()} / {selected.kind === "question" ? "THE STARTING POINT" : selected.id}</span>{selected.kind === "question" && <p>{selected.text}</p>}{(claim || record) && <><ClaimInspector run={run} claimId={claim?.id ?? record!.claim_id} evidenceId={record?.id} onSource={onSource} />{onInspect && <button className="citation" onClick={() => onInspect(claim?.id ?? record!.claim_id, record?.id)}>Open claim inspector</button>}</>}{selected.kind === "source" && <SourceDetails run={run} sourceId={selected.id} onEvidence={onInspect} />}<small>{connected.size > 0 ? `${connected.size} connected nodes` : "No resolved connections"} · {graph.omitted ? `First 12 claims shown; ${graph.omitted} more in the claim ledger.` : "Only supplied relationships are shown."}</small></div></div>
         <p className="constellation-help">Click a node or use arrow keys to trace it. All demonstration sources and excerpts are fictional.</p>
     </div>;
 }

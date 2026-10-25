@@ -11,6 +11,7 @@ import { Activity, Empty, EvidenceDetail, Overview, Report } from "./views";
 import { ClaimLedger, SourceDetails } from "@/components/evidence/claim-inspector";
 import { EvidenceConstellation } from "@/components/evidence/constellation";
 import { useTabIndicator } from "@/hooks/use-interface-motion";
+import { trapDialogFocus, restoreDialogFocus } from "@/lib/utils/dialog-focus";
 import { inverseLayout, MOTION } from "@/lib/motion/system";
 
 export function ResearchWorkspace({ id }: { id: string }) {
@@ -61,7 +62,7 @@ export function ResearchWorkspace({ id }: { id: string }) {
     const openEvidence = (nextClaim: string, evidence?: string) => { setAssessment("all"); setClaimId(nextClaim); setInspectedEvidence(evidence); setInspectorOpen(true); navigate("Evidence"); };
     const openSource = (source: string) => { setSourceId(source); dialog.current?.close(); navigate("Sources"); };
     const inspect = (nextClaim: string, evidence?: string) => { setClaimId(nextClaim); setInspectedEvidence(evidence); opener.current = document.activeElement as HTMLElement; dialog.current?.showModal(); };
-    const closeInspector = () => { dialog.current?.close(); opener.current?.focus(); };
+    const closeInspector = () => { dialog.current?.close(); restoreDialogFocus(opener.current); };
     const rows = [...(run?.report?.comparison ?? [])];
     if (sort !== "original") rows.sort((a, b) => sort === "method" ? a.method.localeCompare(b.method) : (a.dataset ?? "").localeCompare(b.dataset ?? ""));
     return <div data-demo-interrupted={session.interrupted} data-run-status={run?.status ?? "loading"} className={`workspace premium-workspace ${collapsed ? "rail-collapsed" : ""}`}>
@@ -88,13 +89,7 @@ export function ResearchWorkspace({ id }: { id: string }) {
             </section>
             <p className="workspace-footnote">Source support is not independent fact-checking. Review every finding before relying on it.</p>
         </main>
-        <dialog ref={drawer} className="workspace-drawer" aria-labelledby="drawer-title" onClose={() => drawerOpener.current?.focus()}><div className="dialog-heading"><h2 id="drawer-title">Workspace navigation</h2><Button onClick={() => drawer.current?.close()}>Close navigation</Button></div><nav aria-label="Mobile workspace views">{WORKSPACE_TABS.map(name => <button key={name} aria-current={tab === name ? "page" : undefined} onClick={() => { setTab(name); drawer.current?.close(); }}>{name}<span aria-hidden="true">↗</span></button>)}</nav><p>Demo simulation · no live processing</p></dialog>
-        <dialog ref={dialog} className="workspace-dialog" aria-labelledby="inspector-title" onClose={() => opener.current?.focus()} onKeyDown={event => {
-            if (event.key !== "Tab") return;
-            const targets = Array.from(event.currentTarget.querySelectorAll<HTMLElement>('button:not(:disabled), a[href], [tabindex="0"]'));
-            const first = targets[0], last = targets.at(-1);
-            if (event.shiftKey && event.target === first) { event.preventDefault(); last?.focus(); }
-            else if (!event.shiftKey && event.target === last) { event.preventDefault(); first?.focus(); }
-        }}><div className="dialog-heading"><h2 id="inspector-title">Inspect the evidence</h2><Button onClick={closeInspector}>Close inspector</Button></div>{run && <EvidenceDetail run={run} claimId={claimId} evidenceId={inspectedEvidence} onEvidence={(_, evidence) => setInspectedEvidence(evidence)} onSource={openSource} />}</dialog>
+        <dialog ref={drawer} className="workspace-drawer" aria-labelledby="drawer-title" onKeyDown={trapDialogFocus} onClose={() => restoreDialogFocus(drawerOpener.current)}><div className="dialog-heading"><h2 id="drawer-title">Workspace navigation</h2><Button onClick={() => drawer.current?.close()}>Close navigation</Button></div><nav aria-label="Mobile workspace views">{WORKSPACE_TABS.map(name => <button key={name} aria-current={tab === name ? "page" : undefined} onClick={() => { setTab(name); drawer.current?.close(); }}>{name}<span aria-hidden="true">↗</span></button>)}</nav><p>Demo simulation · no live processing</p></dialog>
+        <dialog ref={dialog} className="workspace-dialog" aria-labelledby="inspector-title" onClose={() => restoreDialogFocus(opener.current)} onKeyDown={trapDialogFocus}><div className="dialog-heading"><h2 id="inspector-title">Inspect the evidence</h2><Button onClick={closeInspector}>Close inspector</Button></div>{run && <EvidenceDetail run={run} claimId={claimId} evidenceId={inspectedEvidence} onEvidence={(_, evidence) => setInspectedEvidence(evidence)} onSource={openSource} />}</dialog>
     </div>;
 }

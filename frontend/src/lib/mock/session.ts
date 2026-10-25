@@ -14,6 +14,7 @@ export class DemoSessionApi implements ResearchApi {
     private live = new Set<string>();
     private hydrated = false;
     private unavailable = false;
+    private lastWritten = "";
     constructor(private api: ResearchApi, private storage: () => StoragePort) {}
     private hydrate() {
         if (this.hydrated) return;
@@ -37,7 +38,13 @@ export class DemoSessionApi implements ResearchApi {
             const oldest = this.snapshots.keys().next().value!;
             this.snapshots.delete(oldest); this.restored.delete(oldest);
         }
-        try { this.storage().setItem(DEMO_STORAGE_KEY, JSON.stringify({ version: 1, runs: [...this.snapshots.values()] })); }
+        try {
+            const serialized = JSON.stringify({ version: 1, runs: [...this.snapshots.values()] });
+            if (serialized !== this.lastWritten) {
+                this.storage().setItem(DEMO_STORAGE_KEY, serialized);
+                this.lastWritten = serialized;
+            }
+        }
         catch { this.unavailable = true; }
     }
     sessionState(id: string): DemoSessionState {
