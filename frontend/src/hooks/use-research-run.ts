@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { getDemoResearchApi } from "@/lib/api/demo-client";
+import { getResearchApi } from "@/lib/api/factory";
 import { createRunPoller, type RunSnapshot } from "@/lib/research/poller";
 import { DemoSessionApi } from "@/lib/mock/session";
 export function useResearchRun(id: string) {
@@ -8,8 +8,8 @@ export function useResearchRun(id: string) {
     const poller = useRef<ReturnType<typeof createRunPoller> | null>(null);
     useEffect(() => {
         let current: ReturnType<typeof createRunPoller>;
-        try { const api = getDemoResearchApi(); current = createRunPoller(api, id, setState, () => !(api instanceof DemoSessionApi && api.sessionState(id).interrupted)); }
-        catch { queueMicrotask(() => setState({ run: null, error: "This workspace requires mock data mode. No live API was called.", loading: false, paused: false })); return; }
+        try { const api = getResearchApi(); current = createRunPoller(api, id, setState, () => !(api instanceof DemoSessionApi && api.sessionState(id).interrupted)); }
+        catch { queueMicrotask(() => setState({ run: null, error: "Research service configuration is unavailable. Check the data mode and API URL.", loading: false, paused: false })); return; }
         poller.current = current;
         const visibility = () => current.setVisible(document.visibilityState === "visible");
         visibility();
@@ -18,7 +18,7 @@ export function useResearchRun(id: string) {
     }, [id]);
     let session = { restored: false, interrupted: false, storageUnavailable: false };
     if (typeof window !== "undefined") {
-        try { const api = getDemoResearchApi(); if (api instanceof DemoSessionApi) session = api.sessionState(id); } catch { /* Existing configuration error is reported by the effect. */ }
+        try { const api = getResearchApi(); if (api instanceof DemoSessionApi) session = api.sessionState(id); } catch { /* Existing configuration error is reported by the effect. */ }
     }
     return { ...state, session, refresh: () => poller.current?.refresh() };
 }

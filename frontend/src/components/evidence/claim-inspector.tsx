@@ -1,4 +1,5 @@
 "use client";
+import { useDemoData } from "@/components/research/data-context";
 import { useState } from "react";
 import { Badge, Button } from "@/components/ui";
 import { ASSESSMENT_LABELS } from "@/lib/landing/interaction-model";
@@ -28,6 +29,7 @@ export function ClaimInspector(props: Props) {
     return <InspectorContent key={`${props.run.id}:${props.claimId}`} {...props} />;
 }
 function InspectorContent({ run, claimId, evidenceId, onEvidence, onSource }: Props) {
+    const demo = useDemoData();
     const [selection, setSelection] = useState({ request: evidenceId, id: evidenceId });
     const selected = selection.request === evidenceId ? selection.id : evidenceId;
     const { claim, ids, selectedId, index, resolution } = inspectionContext(run, claimId, selected);
@@ -38,5 +40,5 @@ function InspectorContent({ run, claimId, evidenceId, onEvidence, onSource }: Pr
         <h4>Linked evidence · {ids.length}</h4>{ids.length > 1 && <><div className="inspection-evidence-options" role="group" aria-label="Choose linked evidence">{ids.map((id, i) => <Button key={id} aria-pressed={selectedId === id} onClick={() => choose(id)}>Excerpt {i + 1} · {id}</Button>)}</div><div className="claim-pagination"><Button disabled={index <= 0} onClick={() => choose(ids[index - 1])}>Previous excerpt</Button><span role="status">{index < 0 ? "Unavailable selection" : `Excerpt ${index + 1} of ${ids.length}`}</span><Button disabled={index < 0 || index >= ids.length - 1} onClick={() => choose(ids[index + 1])}>Next excerpt</Button></div></>}
         {!ids.length && !selectedId && <p role="status">No evidence was supplied for this claim.</p>}
         {resolution && <section className="evidence-record" aria-label={`Evidence ${selectedId}`}>{!resolution.available ? <p role="status">Evidence unavailable ({resolution.reason.replaceAll("_", " ")}). No excerpt can be shown.</p> : <><p className="workspace-eyebrow">EXCERPT {resolution.evidence.id} · {resolution.source.title}</p><p className="workspace-muted">{claim.assessment === "unsupported" ? "Linked excerpt — not supporting evidence for this claim." : "Entire supplied excerpt highlighted; no exact supporting span was supplied."}</p><blockquote>{claim.assessment === "unsupported" ? resolution.evidence.excerpt : <mark>{resolution.evidence.excerpt}</mark>}</blockquote><p>{resolution.evidence.explanation ?? "No explanation was supplied."}</p>{onSource ? <Button onClick={() => onSource(resolution.source.id)}>View source detail · {resolution.source.id}</Button> : null}<SourceDetails run={run} sourceId={resolution.source.id} /></>}</section>}
-        <p className="workspace-caveat">Source support is not independent fact-checking. DEMO ONLY: these sources and excerpts are fictional.</p></div>;
+        <p className="workspace-caveat">Source support is not independent fact-checking.{demo ? " DEMO ONLY: these sources and excerpts are fictional." : ""}</p></div>;
 }

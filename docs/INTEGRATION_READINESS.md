@@ -18,7 +18,7 @@
 
 ## Not ready for live claims
 
-ResearchInput/useResearchRun intentionally call getDemoResearchApi. Real mode is rejected visibly, not enabled automatically. UI copy and demo indicators still describe fictional mock content. Enabling real integration requires coordinated UI labeling and API mode wiring after contract sign-off; setting a URL alone does not enable the full live application.
+Phase 6.6: ResearchInput and useResearchRun now use getResearchApi, selecting the existing mock or HTTP adapter from NEXT_PUBLIC_DATA_MODE. Workspace disclosures follow the configured adapter; About examples remain fictional independently of that setting. Real mode does not construct demo persistence or fall back to mock on error. This wiring is not proof of live integration: contract approval, CORS, deployment configuration and end-to-end backend verification remain required. Input limits remain the provisional 10?500 characters.
 
 GET /api/health is documented but absent from the current ResearchApi interface/HTTP adapter. Do not invent a health response or add a mandatory readiness dependency before Dev 1 approval. SSE/export remain future work. POST currently has an internal timeout but no caller AbortSignal in the shared interface; changing this requires joint review.
 

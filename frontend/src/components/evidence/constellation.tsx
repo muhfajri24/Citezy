@@ -1,10 +1,12 @@
 "use client";
+import { useDemoData } from "@/components/research/data-context";
 import { useId, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { ResearchRun } from "@/types/research";
 import { buildEvidenceGraph, pathsForEdge, traceSelection } from "@/lib/research/constellation";
 import { ClaimInspector, SourceDetails } from "./claim-inspector";
 
 export function EvidenceConstellation({ run, compact = false, onInspect, onSource }: { run: ResearchRun; compact?: boolean; onInspect?: (claim: string, evidence?: string) => void; onSource?: (source: string) => void }) {
+    const demo = useDemoData();
     const graph = useMemo(() => buildEvidenceGraph(run), [run]);
     const [selection, setSelection] = useState("question");
     const [preview, setPreview] = useState<string | null>(null);
@@ -29,7 +31,7 @@ export function EvidenceConstellation({ run, compact = false, onInspect, onSourc
         else { setFlow(null); setPreview(null); setSelection(to); }
     };
     return <div className={`constellation ${compact ? "constellation-compact" : ""}`}>
-        <div className="constellation-heading"><span className="section-kicker">THE EVIDENCE CONSTELLATION</span><span className="constellation-demo">DEMO ONLY</span></div>
+        <div className="constellation-heading"><span className="section-kicker">THE EVIDENCE CONSTELLATION</span>{demo && <span className="constellation-demo">DEMO ONLY</span>}</div>
         <p className="constellation-intro">An answer is a network.<br /><em>Pull on a thread.</em></p>
         {flows.length > 0 && <div className="constellation-flows" role="group" aria-label="Choose an evidence flow"><p>Choose a flow, click a connecting line, or select a node.</p>{flows.map((path, index) => <button type="button" key={JSON.stringify(path)} aria-pressed={JSON.stringify(path) === flow} aria-controls={panelId} onClick={() => selectFlow(path)}>Flow {String(index + 1).padStart(2, "0")} <span>{path.slice(1).map(key => graph.nodes.find(node => node.key === key)!.id).join(" → ")}</span></button>)}</div>}
         {graph.nodes.length === 1 ? <div className="constellation-empty">No claim relationships are available yet. The map will appear when linked data is returned.</div> : <>
@@ -52,6 +54,6 @@ export function EvidenceConstellation({ run, compact = false, onInspect, onSourc
             </div>
         </>}
         <p className="sr-only" role="status">{selected.label} {selected.id} selected. {selectedConnected.size} connected nodes.</p><div ref={detail} id={panelId} className="constellation-detail"><div key={selected.key} className="constellation-detail-content">{selectedPath && <div className="constellation-trail" aria-label="One connected evidence path">{selectedPath.map((key, index) => <span key={key}>{index > 0 && <i aria-hidden="true">→</i>}{key === "question" ? "Question" : key.split(":").slice(1).join(":")}</span>)}</div>}<span className="section-kicker">{selected.kind.toUpperCase()} / {selected.kind === "question" ? "THE STARTING POINT" : selected.id}</span>{selected.kind === "question" && <p>{selected.text}</p>}{(claim || record) && <><ClaimInspector run={run} claimId={claim?.id ?? record!.claim_id} evidenceId={record?.id ?? (selectedFlow ? graph.nodes.find(node => node.key === selectedFlow[2])?.id : undefined)} onSource={onSource} />{onInspect && <button className="citation" onClick={() => onInspect(claim?.id ?? record!.claim_id, record?.id)}>Open claim inspector</button>}</>}{selected.kind === "source" && <SourceDetails run={run} sourceId={selected.id} onEvidence={onInspect} />}<small>{selectedConnected.size > 0 ? `${selectedConnected.size} connected nodes` : "No resolved connections"} · {graph.omitted ? `First 12 claims shown; ${graph.omitted} more in the claim ledger.` : "Only supplied relationships are shown."}</small></div></div>
-        <p className="constellation-help">Click a node or use arrow keys to trace it. All demonstration sources and excerpts are fictional.</p>
+        <p className="constellation-help">Click a node or use arrow keys to trace it. {demo ? "All demonstration sources and excerpts are fictional." : "Only supplied relationships are shown."}</p>
     </div>;
 }

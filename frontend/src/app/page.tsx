@@ -1,14 +1,8 @@
-import { EvidencePreview } from "@/components/landing/evidence-preview";
-import { loadLandingPreview } from "@/lib/api/landing-preview";
+import Link from "next/link";
 import { Navigation } from "@/components/landing/navigation";
-import { Hero } from "@/components/landing/hero";
 import { ResearchInput } from "@/components/landing/research-input";
-import { HowItWorks } from "@/components/landing/how-it-works";
-import { Features } from "@/components/landing/features";
-import { Footer } from "@/components/landing/footer";
-import { EvidenceConstellation } from "@/components/evidence/constellation";
-
-export default async function Home() {
-    const preview = await loadLandingPreview();
-    return <div className="landing-page landing-overhaul"><Navigation /><main id="main" tabIndex={-1}><Hero /><ResearchInput /><section id="evidence-map" className="landing-container constellation-section" aria-label="Explore the evidence constellation"><EvidenceConstellation run={preview} /></section><HowItWorks run={preview} /><EvidencePreview run={preview} /><Features /></main><Footer /></div>;
+export default function Home() {
+ return <div className="landing-page landing-overhaul product-home"><Navigation active="research" /><main id="main" tabIndex={-1}>
+ <div className="product-intro landing-container"><p className="section-kicker">CITEZY / EVIDENCE-FIRST RESEARCH</p><h1>Don&apos;t just cite it. <em>Check it.</em></h1><p>Ask a question. Inspect the claims. Follow the evidence.</p></div><ResearchInput />
+ <div className="product-workflow landing-container"><p>Question &#8594; Sources &#8594; Claims &#8594; Evidence</p><p>A citation is a starting point. Read the excerpt and its limitations before relying on a claim.</p><Link href="/about">How Citezy works &#8599;</Link></div></main></div>;
 }
