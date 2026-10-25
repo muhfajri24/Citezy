@@ -42,12 +42,16 @@ export function createSubmissionController(
                 navigate(`/research/${encodeURIComponent(result.id)}`);
                 return { kind: "started", id: result.id };
             } catch (error) {
+                console.error("Submission failed:", error);
                 pending = false;
+                const message = error instanceof ResearchApiError && error.error.code === "DEMO_MODE_REQUIRED"
+                    ? "This preview only supports demo mode. Restart the app in mock mode to create a simulated request."
+                    : error instanceof ResearchApiError && error.error.message
+                    ? error.error.message
+                    : "We couldn't create your research request. Your question is still here. Please try again.";
                 return {
                     kind: "error",
-                    message: error instanceof ResearchApiError && error.error.code === "DEMO_MODE_REQUIRED"
-                        ? "This preview only supports demo mode. Restart the app in mock mode to create a simulated request."
-                        : "We couldn't create your research request. Your question is still here. Please try again.",
+                    message,
                 };
             }
         },

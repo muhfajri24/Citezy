@@ -12,11 +12,16 @@ export function createResearchApi(config: ApiConfig = {
     mode: process.env.NEXT_PUBLIC_DATA_MODE,
     baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
 }): ResearchApi {
-    const mode = config.mode ?? "mock";
+    const mode = config.mode ?? process.env.NEXT_PUBLIC_DATA_MODE ?? "mock";
     if (mode === "mock")
         return new MockResearchApi();
-    if (mode === "real")
-        return new HttpResearchApi(config.baseUrl ?? "");
+    if (mode === "real") {
+        const fallbackHost = typeof window !== "undefined" && window.location.hostname === "127.0.0.1"
+            ? "http://127.0.0.1:8000"
+            : "http://localhost:8000";
+        const baseUrl = config.baseUrl || process.env.NEXT_PUBLIC_API_BASE_URL || fallbackHost;
+        return new HttpResearchApi(baseUrl);
+    }
     throw new ResearchApiError("CONFIGURATION_ERROR", "NEXT_PUBLIC_DATA_MODE must be mock or real.");
 }
 let instance: ResearchApi | undefined;
