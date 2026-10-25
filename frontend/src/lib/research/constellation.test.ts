@@ -1,8 +1,16 @@
 import { describe, expect, it } from "vitest";
 import { createDemoRun } from "@/lib/mock/fixture";
-import { buildEvidenceGraph, traceSelection } from "./constellation";
+import { buildEvidenceGraph, pathsForEdge, traceSelection } from "./constellation";
 const fixture = () => createDemoRun("demo", "A research question", "2026-10-25T00:00:00Z");
 describe("evidence constellation integrity", () => {
+    it("selects the exact supplied flow for an evidence edge", () => {
+        expect(pathsForEdge(buildEvidenceGraph(fixture()), "evidence:e2", "source:s2")).toEqual([["question", "claim:c2", "evidence:e2", "source:s2"]]);
+        expect(pathsForEdge(buildEvidenceGraph(fixture()), "evidence:e2", "source:s1")).toEqual([]);
+    });
+    it("keeps shared edges ambiguous instead of choosing an unrelated excerpt", () => {
+        const run = fixture(); run.evidence.push({...run.evidence[0],id:"extra",source_id:"s2"}); run.report!.claims[0].evidence_ids.push("extra");
+        expect(pathsForEdge(buildEvidenceGraph(run),"question","claim:c1")).toHaveLength(2);
+    });
     it("builds only question/claim/excerpt/source paths from actual references", () => {
         const graph = buildEvidenceGraph(fixture());
         expect(graph.nodes).toHaveLength(10); expect(graph.edges).toHaveLength(9);

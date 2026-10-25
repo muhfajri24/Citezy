@@ -3,6 +3,7 @@ import { ResearchApiError } from "./errors";
 import { MockResearchApi } from "./mock-client";
 import { HttpResearchApi } from "./real-client";
 import { DemoSessionApi } from "@/lib/mock/session";
+import { createBrowserDemoId } from "@/lib/mock/demo-id";
 interface ApiConfig {
     mode?: string;
     baseUrl?: string;
@@ -24,7 +25,7 @@ export function getResearchApi(): ResearchApi {
     if (!instance) {
         const mode = process.env.NEXT_PUBLIC_DATA_MODE ?? "mock";
         instance = mode === "mock" && typeof window !== "undefined"
-            ? new DemoSessionApi(new MockResearchApi({ createId: () => `demo-${crypto.randomUUID()}` }), () => window.sessionStorage)
+            ? new DemoSessionApi(new MockResearchApi({ createId: createBrowserDemoId }), () => window.sessionStorage)
             : createResearchApi();
     }
     return instance;

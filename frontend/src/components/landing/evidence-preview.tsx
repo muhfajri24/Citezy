@@ -8,7 +8,7 @@ import { ExternalIcon } from "./icons";
 
 export function EvidencePreview({ run }: { run: ResearchRun }) {
     const claims = run.report?.claims ?? [];
-    const [selectedId, setSelectedId] = useState(claims[0]?.id ?? "");
+    const [selectedId, setSelectedId] = useState("");
     const tabs = useRef<(HTMLButtonElement | null)[]>([]);
     const panel = useRef<HTMLDivElement>(null);
     const baseId = useId();
@@ -35,7 +35,7 @@ export function EvidencePreview({ run }: { run: ResearchRun }) {
                 {claims.map((claim, index) => <button type="button" role="tab" key={claim.id}
                     ref={(node) => { tabs.current[index] = node; }}
                     id={`${baseId}-tab-${claim.id}`} aria-controls={`${baseId}-panel`}
-                    aria-selected={selectedId === claim.id} tabIndex={selectedId === claim.id ? 0 : -1}
+                    aria-selected={selectedId === claim.id} tabIndex={selectedId === claim.id || !selectedId && index === 0 ? 0 : -1}
                     onClick={(event) => {
                         setSelectedId(claim.id);
                         if (event.detail > 0 && window.matchMedia("(max-width: 900px)").matches) {
@@ -48,8 +48,9 @@ export function EvidencePreview({ run }: { run: ResearchRun }) {
                     <span className={`support-label assessment-${claim.assessment}`}><span aria-hidden="true" />{ASSESSMENT_LABELS[claim.assessment]}</span>
                 </button>)}
             </div>
-            <div ref={panel} role="tabpanel" id={`${baseId}-panel`} aria-labelledby={selected ? `${baseId}-tab-${selected.claim.id}` : undefined} tabIndex={0} className="demo-evidence-panel">
+            <div ref={panel} role="tabpanel" id={`${baseId}-panel`} aria-labelledby={selected ? `${baseId}-tab-${selected.claim.id}` : undefined} aria-label={!selected ? "Choose a claim to inspect its evidence" : undefined} tabIndex={0} className="demo-evidence-panel">
                 <div className="evidence-pane-stack">
+                    {!selectedId && <div className="evidence-panel-content is-active evidence-placeholder"><span className="section-kicker">YOUR NEXT STEP</span><h3>Choose a claim.</h3><p>Select a claim on the left to see its supplied excerpt, source and limitations.</p></div>}
                     {(claims.length ? claims.map((claim) => claim.id) : [""]).map((id) => {
                         const active = id === selectedId;
                         return <div key={id} className={`evidence-panel-content ${active ? "is-active" : ""}`} aria-hidden={!active} inert={!active}>

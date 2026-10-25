@@ -43,8 +43,8 @@ export function useNarrativeProgress(ref: RefObject<HTMLElement | null>) {
         const observer = typeof IntersectionObserver !== "undefined" ? new IntersectionObserver(entries => { visible = entries[0]?.isIntersecting ?? false; if (visible) schedule(); else { cancelAnimationFrame(frame); frame = 0; } }) : null;
         observer?.observe(element);
         if (!observer) { visible = true; schedule(); }
-        window.addEventListener("scroll", schedule, { passive: true }); window.addEventListener("resize", schedule, { passive: true }); document.addEventListener("visibilitychange", schedule);
-        return () => { observer?.disconnect(); cancelAnimationFrame(frame); window.removeEventListener("scroll", schedule); window.removeEventListener("resize", schedule); document.removeEventListener("visibilitychange", schedule); element.style.removeProperty("--story-progress"); };
+        window.addEventListener("scroll", schedule, { passive: true, capture: true }); window.addEventListener("resize", schedule, { passive: true }); document.addEventListener("visibilitychange", schedule);
+        return () => { observer?.disconnect(); cancelAnimationFrame(frame); window.removeEventListener("scroll", schedule, true); window.removeEventListener("resize", schedule); document.removeEventListener("visibilitychange", schedule); element.style.removeProperty("--story-progress"); };
     }, [ref]);
 }
 

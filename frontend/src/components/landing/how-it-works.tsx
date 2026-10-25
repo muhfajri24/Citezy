@@ -7,36 +7,55 @@ import { STORY_STAGES, ASSESSMENT_LABELS, getActiveStoryIndex, getStoryScrollTar
 import { MarkIcon } from "./icons";
 import { useNarrativeProgress } from "@/hooks/use-interface-motion";
 
+function scrollContainer(element: HTMLElement | null) {
+    let parent = element?.parentElement;
+    while (parent && parent !== document.body && parent !== document.documentElement) {
+        if (/(auto|scroll)/.test(getComputedStyle(parent).overflowY) && parent.scrollHeight > parent.clientHeight) return parent;
+        parent = parent.parentElement;
+    }
+    return null;
+}
+function activationLine(root: HTMLElement | null) {
+    return (root?.getBoundingClientRect().top ?? 0) + (root?.clientHeight ?? window.innerHeight) * (matchMedia("(max-width: 900px)").matches ? 0.7 : 0.45);
+}
+
 export function HowItWorks({ run }: { run: ResearchRun }) {
     const [active, setActive] = useState(0);
     const steps = useRef<(HTMLLIElement | null)[]>([]);
     const section = useRef<HTMLElement>(null);
+    const viewport = useRef<HTMLElement | null>(null);
     useNarrativeProgress(section);
     useEffect(() => {
-        if (!("IntersectionObserver" in window)) return;
-        let observer: IntersectionObserver | undefined;
-        function observe() {
-            observer?.disconnect();
-            const height = window.innerHeight;
-            const line = height * (window.matchMedia("(max-width: 900px)").matches ? 0.7 : 0.45);
-            const margin = Math.min(35, height / 10);
-            observer = new IntersectionObserver((entries) => {
-                if (!entries.some((entry) => entry.isIntersecting)) return;
-                const rects = steps.current.map((step) => step?.getBoundingClientRect() ?? { top: Infinity, bottom: Infinity });
-                setActive(getActiveStoryIndex(rects, line));
-            }, { rootMargin: `-${Math.max(0, line - margin)}px 0px -${Math.max(0, height - line - margin)}px 0px`, threshold: 0 });
-            steps.current.forEach((step) => { if (step) observer!.observe(step); });
-        }
-        observe();
-        window.addEventListener("resize", observe, { passive: true });
-        return () => { observer?.disconnect(); window.removeEventListener("resize", observe); };
+        let frame = 0, visible = true;
+        const update = () => {
+            frame = 0;
+            if (!visible || document.hidden) return;
+            const line = activationLine(viewport.current);
+            const rects = steps.current.map(step => step?.getBoundingClientRect() ?? { top: Infinity, bottom: Infinity });
+            setActive(getActiveStoryIndex(rects, line));
+        };
+        const schedule = () => { if (visible && !document.hidden && !frame) frame = requestAnimationFrame(update); };
+        const observer = typeof IntersectionObserver !== "undefined" ? new IntersectionObserver(entries => {
+            visible = entries[0]?.isIntersecting ?? false;
+            if (visible) schedule(); else { cancelAnimationFrame(frame); frame = 0; }
+        }) : null;
+        if (section.current) observer?.observe(section.current);
+        viewport.current = scrollContainer(section.current);
+        const resize = () => { viewport.current = scrollContainer(section.current); schedule(); };
+        window.addEventListener("scroll", schedule, { passive: true, capture: true });
+        window.addEventListener("resize", resize, { passive: true });
+        document.addEventListener("visibilitychange", schedule);
+        schedule();
+        return () => { cancelAnimationFrame(frame); observer?.disconnect(); window.removeEventListener("scroll", schedule, true); window.removeEventListener("resize", resize); document.removeEventListener("visibilitychange", schedule); };
     }, []);
     function choose(index: number) {
         setActive(index);
         const step = steps.current[index];
         if (!step) return;
-        const line = window.innerHeight * (window.matchMedia("(max-width: 900px)").matches ? 0.7 : 0.45);
-        window.scrollTo({ top: getStoryScrollTarget(window.scrollY, step.getBoundingClientRect(), line), behavior: "instant" });
+        const root = scrollContainer(section.current);
+        viewport.current = root;
+        const top = getStoryScrollTarget(root?.scrollTop ?? window.scrollY, step.getBoundingClientRect(), activationLine(root));
+        if (root) root.scrollTo({ top, behavior: "instant" }); else window.scrollTo({ top, behavior: "instant" });
     }
     return <section ref={section} id="how-it-works" className="how-section living-story landing-container" aria-labelledby="how-title">
         <div className="section-heading"><div><p className="section-kicker">A RESEARCH TRAIL YOU CAN FOLLOW.</p><h2 id="how-title">How Citezy works.<br /><em>One step closer.</em></h2></div><p>Scroll to explore the intended workflow.<br />Or choose a stage to jump straight in.<br /><span className="section-disclaimer">DEMO walkthrough. Scroll position is not AI progress.</span></p></div>
@@ -49,7 +68,7 @@ export function HowItWorks({ run }: { run: ResearchRun }) {
             </li>)}</ol>
             <div className="story-panel">
                 <div className="story-panel-heading"><span><MarkIcon /> A FICTIONAL RESEARCH TRAIL</span><Badge className="demo-badge">DEMO</Badge></div>
-                <div className="story-trace" aria-hidden="true">{["Ask", "Search", "Read", "Check", "Report"].map((label, index) => <span key={label} className={index <= active ? "trace-reached" : ""}><i />{label}</span>)}</div>
+                <div className="story-trace" aria-hidden="true">{["Ask", "Search", "Read", "Check", "Report"].map((label, index) => <span key={label} className={index <= active ? "trace-reached" : ""}>{label}</span>)}</div>
                 <div className="story-stage-controls" role="group" aria-label="Explore research stages">{STORY_STAGES.map((stage, index) => <button type="button" key={stage.id} aria-pressed={active === index} aria-controls="story-visual" onClick={() => choose(index)}>{stage.label}</button>)}</div>
                 <div id="story-visual" className="story-visual" role="region" tabIndex={0} aria-label={`${STORY_STAGES[active].label} stage illustration`}>
                     <div key={active} className="story-visual-content"><StoryVisual stage={STORY_STAGES[active].id} run={run} /></div>

@@ -32,3 +32,8 @@ export function buildEvidenceGraph(run: ResearchRun): EvidenceGraph {
 export function traceSelection(graph: EvidenceGraph, key: string) {
     return new Set(graph.paths.filter(path => path.includes(key)).flat());
 }
+
+/** Complete supplied paths containing this exact directed edge; never guess among shared edges. */
+export function pathsForEdge(graph: EvidenceGraph, from: string, to: string) {
+    return graph.paths.filter(path => path.length === 4 && path.some((key, index) => key === from && path[index + 1] === to));
+}

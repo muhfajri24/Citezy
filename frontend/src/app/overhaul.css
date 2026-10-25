@@ -37,8 +37,8 @@
 .landing-overhaul .research-panel h2 { grid-column:1; grid-row:2; align-self:start; font-size:38px; max-width:310px; line-height:1.15; letter-spacing:-1.3px; margin:6px 0; }
 .landing-overhaul .research-panel form { grid-column:2; grid-row:1 / span 3; }
 .landing-overhaul .research-textarea { min-height:145px; border-radius:3px; background:#0b0b10; font-size:16px; }
-.landing-overhaul .example-questions { grid-column:1; border-top:0; margin:15px 0 0; padding:0; }
-.landing-overhaul .example-questions > div { gap:8px; flex-direction:column; align-items:start; }
+.landing-overhaul .example-questions { display:block; min-width:0; grid-column:1; border-top:0; margin:15px 0 0; padding:0; }
+.landing-overhaul .example-questions > div { width:100%; min-width:0; gap:8px; flex-direction:column; align-items:start; }
 .landing-overhaul .example-questions button { border:0; border-bottom:1px solid #44444f; border-radius:0; padding:9px 0; width:100%; justify-content:space-between; text-align:left; }
 .landing-overhaul .research-submit { border-radius:4px; }
 .landing-overhaul .research-submit-row { flex-wrap:wrap; }

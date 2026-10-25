@@ -26,6 +26,23 @@ form:focus-within .submission-feedback > span { transform:scaleX(.18); }
 form[data-submission=pending] .submission-feedback > span { width:30%; transform:none; animation:submission-sweep 1100ms linear infinite; }
 form[data-submission=pending] .research-submit { box-shadow:0 0 0 4px #b8f36b18; }
 .story-trace { position:relative; padding-bottom:16px; }
+.example-help,.example-feedback { color:#b9b9c7; font-size:12px; line-height:1.65; }
+.example-help { margin:10px 0; }
+.example-feedback { min-height:40px; margin:14px 0 0; color:#c9f6a0; }
+.evidence-placeholder { align-content:center; color:#b9b9c7; }
+.landing-overhaul .demo-claim:not(.is-selected) { background:#15151e; }
+.landing-overhaul .demo-claim:not(.is-selected):hover { background:#1b1b25; }
+.constellation-map .edge-flow { fill:none; stroke:#c7f4a0; stroke-width:2.5; stroke-dasharray:.07 .93; stroke-dashoffset:1; opacity:0; pointer-events:none; }
+.constellation-map .edge-hit { fill:none; stroke:transparent; stroke-width:20; opacity:1; pointer-events:stroke; cursor:pointer; }
+.constellation-flows { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 24px; }
+.constellation-flows > p { flex-basis:100%; margin:0 0 6px; color:var(--map-muted); font-size:12px; }
+.constellation-flows button { background:#1b1b25; border:1px solid #4d4d61; border-radius:5px; color:var(--map-text); min-height:44px; padding:10px 14px; cursor:pointer; text-align:left; font-size:12px; }
+.constellation-flows button > span { display:block; color:var(--map-muted); font:10px/1.6 Consolas,monospace; }
+.constellation-flows button[aria-pressed=true] { border-color:#b8f36b; background:#262f22; color:#d4ffa6; }
+.constellation-flows button:hover { border-color:#c1b5f8; }
+.constellation-flows button:focus-visible { outline:2px solid #b8f36b; outline-offset:3px; }
+.constellation-map:is(:hover,:focus-within) .edge-flow { animation:relationship-flow 1400ms linear 3; }
+@keyframes relationship-flow { 0% { stroke-dashoffset:1; opacity:0; } 15% { opacity:.9; } 85% { opacity:.9; } 100% { stroke-dashoffset:0; opacity:0; } }
 .story-trace::after { content:""; height:2px; position:absolute; left:20px; right:20px; bottom:3px; background:#b8f36b; transform-origin:left; transform:scaleX(var(--story-progress,0)); }
 .story-trace::before { content:""; height:2px; position:absolute; left:20px; right:20px; bottom:3px; background:#363641; }
 .landing-overhaul .story-step.is-active h3 { text-shadow:0 0 25px #ffffff08; }
