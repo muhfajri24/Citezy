@@ -26,7 +26,7 @@ export class HttpResearchApi implements ResearchApi {
     private readonly diagnose: (issues: IntegrityIssue[]) => void;
     constructor(baseUrl: string, options: HttpOptions = {}) {
         this.baseUrl = validateBaseUrl(baseUrl);
-        this.fetcher = options.fetch ?? fetch;
+        this.fetcher = options.fetch ? options.fetch.bind(globalThis) : ((input, init) => fetch(input, init));
         this.timeoutMs = options.timeoutMs ?? 10000;
         if (!Number.isFinite(this.timeoutMs) || this.timeoutMs <= 0)
             throw new Error("Request timeout must be positive.");
@@ -41,8 +41,10 @@ export class HttpResearchApi implements ResearchApi {
         else
             signal?.addEventListener("abort", abort, { once: true });
         const timer = setTimeout(() => { timedOut = true; controller.abort(); }, this.timeoutMs);
+        const targetUrl = `${this.baseUrl}${path}`;
         try {
-            const response = await this.fetcher(`${this.baseUrl}${path}`, { ...init, signal: controller.signal });
+            console.log(`[HttpResearchApi] Requesting: ${init.method || "GET"} ${targetUrl}`);
+            const response = await this.fetcher(targetUrl, { ...init, signal: controller.signal });
             if (!response.ok)
                 throw httpError(response.status);
             try {
@@ -55,6 +57,7 @@ export class HttpResearchApi implements ResearchApi {
             }
         }
         catch (error) {
+            console.error(`[HttpResearchApi] Failed calling ${targetUrl}:`, error);
             if (error instanceof ResearchApiError)
                 throw error;
             if (timedOut)
