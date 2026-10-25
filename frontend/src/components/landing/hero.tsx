@@ -1,49 +1,10 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { pointerOffsets } from "@/lib/landing/interaction-model";
+import { usePointerDepth } from "@/hooks/use-interface-motion";
 import { Badge } from "@/components/ui";
 import { ArrowIcon, MarkIcon } from "./icons";
 export function Hero() {
-    const hero = useRef<HTMLElement>(null);
-    useEffect(() => {
-        const element = hero.current;
-        if (!element) return;
-        const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
-        const finePointer = window.matchMedia("(pointer: fine)");
-        let frame = 0;
-        let x = 0;
-        let y = 0;
-        function reset() {
-            cancelAnimationFrame(frame);
-            frame = 0;
-            element!.style.removeProperty("--hero-x");
-            element!.style.removeProperty("--hero-y");
-        }
-        function move(event: PointerEvent) {
-            if (reduced.matches || !finePointer.matches || event.pointerType !== "mouse") return;
-            x = event.clientX;
-            y = event.clientY;
-            if (frame) return;
-            frame = requestAnimationFrame(() => {
-                frame = 0;
-                const offset = pointerOffsets(x, y, element!.getBoundingClientRect());
-                element!.style.setProperty("--hero-x", `${offset.x}px`);
-                element!.style.setProperty("--hero-y", `${offset.y}px`);
-            });
-        }
-        element.addEventListener("pointermove", move, { passive: true });
-        element.addEventListener("pointerleave", reset);
-        reduced.addEventListener("change", reset);
-        finePointer.addEventListener("change", reset);
-        return () => {
-            reset();
-            element.removeEventListener("pointermove", move);
-            element.removeEventListener("pointerleave", reset);
-            reduced.removeEventListener("change", reset);
-            finePointer.removeEventListener("change", reset);
-        };
-    }, []);
+    const hero = usePointerDepth<HTMLElement>();
     return <section ref={hero} className="hero landing-container" aria-labelledby="hero-title">
         <div className="hero-coordinate" aria-hidden="true">CITEZY / RESEARCH IN THE OPEN <span>QUESTION → CLAIM → EVIDENCE</span></div>
         <div className="hero-pointer-field" aria-hidden="true" /><div className="hero-copy">

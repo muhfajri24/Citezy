@@ -47,3 +47,8 @@ See [Phase 4 implementation and manual QA](../docs/IMPLEMENTATION_PHASE_4.md), i
 Landing kini memiliki komposisi editorial baru dan Evidence Constellation interaktif. Pilih node untuk menelusuri Question -> Claim -> Excerpt -> Source; pada mobile graph menjadi grid tombol. Workspace memiliki sidebar collapse/expand, drawer navigasi mobile dan kontrol tutup/buka panel evidence. Klik klaim laporan dapat membuka inspector melalui ID evidence yang tersedia. Semua data tetap DEMO ONLY; adapter dan kontrak API tidak berubah, tanpa dependency baru.
 
 Lihat [laporan Phase 4.5](../docs/IMPLEMENTATION_PHASE_4_5.md) untuk audit, file, cara mencoba, hasil pengujian, screenshot dan batasan. Implementasi disiapkan untuk review pada feat/frontend; merge membutuhkan instruksi terpisah.
+## Phase 4.6 - Living Interface 2.0
+
+Motion disatukan dengan token 140/220/360ms, hero berinterpolasi dengan beberapa layer, progres scroll narasi, reveal jalur graph, indikator tab bergerak, FLIP sidebar, transisi dialog/drawer dan panel evidence dengan tinggi tetap. Input menandai contoh terpilih; Source Explorer mengumumkan jumlah hasil; Activity menghitung progress dari step adapter, bukan confidence atau progress buatan.
+
+Fallback route memakai loading.tsx Next.js asli. Semua data tetap DEMO ONLY. Tidak ada library baru, backend atau kontrak API yang diubah. Lihat [laporan Phase 4.6](../docs/IMPLEMENTATION_PHASE_4_6.md) untuk file, pengujian, batasan dan cara mencoba. Implementasi Phase 4.6 siap direview pada feat/frontend; merge memerlukan instruksi terpisah.

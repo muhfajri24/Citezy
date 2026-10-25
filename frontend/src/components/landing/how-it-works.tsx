@@ -5,10 +5,13 @@ import type { ResearchRun } from "@/types/research";
 import { Badge } from "@/components/ui";
 import { STORY_STAGES, ASSESSMENT_LABELS, getActiveStoryIndex, getStoryScrollTarget } from "@/lib/landing/interaction-model";
 import { MarkIcon } from "./icons";
+import { useNarrativeProgress } from "@/hooks/use-interface-motion";
 
 export function HowItWorks({ run }: { run: ResearchRun }) {
     const [active, setActive] = useState(0);
     const steps = useRef<(HTMLLIElement | null)[]>([]);
+    const section = useRef<HTMLElement>(null);
+    useNarrativeProgress(section);
     useEffect(() => {
         if (!("IntersectionObserver" in window)) return;
         let observer: IntersectionObserver | undefined;
@@ -35,7 +38,7 @@ export function HowItWorks({ run }: { run: ResearchRun }) {
         const line = window.innerHeight * (window.matchMedia("(max-width: 900px)").matches ? 0.7 : 0.45);
         window.scrollTo({ top: getStoryScrollTarget(window.scrollY, step.getBoundingClientRect(), line), behavior: "instant" });
     }
-    return <section id="how-it-works" className="how-section living-story landing-container" aria-labelledby="how-title">
+    return <section ref={section} id="how-it-works" className="how-section living-story landing-container" aria-labelledby="how-title">
         <div className="section-heading"><div><p className="section-kicker">A RESEARCH TRAIL YOU CAN FOLLOW.</p><h2 id="how-title">How Citezy works.<br /><em>One step closer.</em></h2></div><p>Scroll to explore the intended workflow.<br />Or choose a stage to jump straight in.<br /><span className="section-disclaimer">DEMO walkthrough. Scroll position is not AI progress.</span></p></div>
         <div className="story-layout">
             <ol className="story-steps">{STORY_STAGES.map((stage, index) => <li key={stage.id} ref={(node) => { steps.current[index] = node; }} id={`story-${stage.id}`} className={`story-step ${active === index ? "is-active" : ""}`}>
