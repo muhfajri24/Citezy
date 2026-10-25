@@ -15,7 +15,7 @@ class NemotronService:
 
     async def _chat_completion(self, system_prompt: str, user_prompt: str, temperature: float = 0.2) -> Optional[str]:
         """Make OpenAI-compatible chat completion call to Nebius Token Factory."""
-        if not self.api_key:
+        if not self.api_key or "your_nebius_api_key" in self.api_key:
             return None
 
         url = f"{self.base_url}/chat/completions"
