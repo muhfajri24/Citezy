@@ -12,10 +12,10 @@ function fakeApi(startRun = vi.fn<ResearchApi["startRun"]>().mockResolvedValue({
 }
 
 describe("demo question validation", () => {
-    it.each(["", "   ", "short", "x".repeat(501)])("rejects invalid input %#", (value) => {
+    it.each(["", "   ", "xx", "x".repeat(1001)])("rejects invalid input %#", (value) => {
         expect(validateQuestion(value)).toBeTypeOf("string");
     });
-    it.each(["x".repeat(10), "x".repeat(500), "   " + question + "   "])("accepts boundary/trimmed input %#", (value) => {
+    it.each(["x".repeat(3), "x".repeat(1000), "   " + question + "   "])("accepts boundary/trimmed input %#", (value) => {
         expect(validateQuestion(value)).toBeNull();
     });
     it("provides three valid example questions", () => {

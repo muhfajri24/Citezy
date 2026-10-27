@@ -1,9 +1,9 @@
 import type { ResearchApi } from "@/lib/api/interface";
 import { ResearchApiError } from "@/lib/api/errors";
 
-// Frontend demo limits only. Final real-mode limits require Dev 1 approval.
-export const QUESTION_MIN_LENGTH = 10;
-export const QUESTION_MAX_LENGTH = 500;
+// Verified against FastAPI StartRunRequest in the Phase 7A OpenAPI audit.
+export const QUESTION_MIN_LENGTH = 3;
+export const QUESTION_MAX_LENGTH = 1000;
 export const EXAMPLE_QUESTIONS = [
     { label: "Retrieval-augmented generation", question: "How does retrieval-augmented generation compare with fine-tuning for answering domain-specific questions?" },
     { label: "Efficient language models", question: "What are the trade-offs between LoRA and full fine-tuning for adapting language models?" },
@@ -11,7 +11,7 @@ export const EXAMPLE_QUESTIONS = [
 ] as const;
 
 export function validateQuestion(value: string): string | null {
-    const length = value.trim().length;
+    const length = Array.from(value.trim()).length;
     if (length === 0) return "Start with a research question.";
     if (length < QUESTION_MIN_LENGTH) return `Add a little detail: use at least ${QUESTION_MIN_LENGTH} characters.`;
     if (length > QUESTION_MAX_LENGTH) return `Keep your question within ${QUESTION_MAX_LENGTH} characters.`;
@@ -42,7 +42,6 @@ export function createSubmissionController(
                 navigate(`/research/${encodeURIComponent(result.id)}`);
                 return { kind: "started", id: result.id };
             } catch (error) {
-                console.error("Submission failed:", error);
                 pending = false;
                 const message = error instanceof ResearchApiError && error.error.code === "DEMO_MODE_REQUIRED"
                     ? "This preview only supports demo mode. Restart the app in mock mode to create a simulated request."

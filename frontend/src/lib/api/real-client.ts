@@ -43,7 +43,6 @@ export class HttpResearchApi implements ResearchApi {
         const timer = setTimeout(() => { timedOut = true; controller.abort(); }, this.timeoutMs);
         const targetUrl = `${this.baseUrl}${path}`;
         try {
-            console.log(`[HttpResearchApi] Requesting: ${init.method || "GET"} ${targetUrl}`);
             const response = await this.fetcher(targetUrl, { ...init, signal: controller.signal });
             if (!response.ok)
                 throw httpError(response.status);
@@ -57,7 +56,6 @@ export class HttpResearchApi implements ResearchApi {
             }
         }
         catch (error) {
-            console.error(`[HttpResearchApi] Failed calling ${targetUrl}:`, error);
             if (error instanceof ResearchApiError)
                 throw error;
             if (timedOut)
@@ -70,6 +68,13 @@ export class HttpResearchApi implements ResearchApi {
             clearTimeout(timer);
             signal?.removeEventListener("abort", abort);
         }
+    }
+    /** Liveness only: does not establish model access or pipeline readiness. */
+    async getHealth(signal?: AbortSignal): Promise<{ status: "ok" }> {
+        const value = await this.request("/api/health", { method: "GET", cache: "no-store" }, signal);
+        if (!value || typeof value !== "object" || !("status" in value) || value.status !== "ok")
+            throw new ResearchApiError("INVALID_RESPONSE", "The research service returned an invalid health response.");
+        return { status: "ok" };
     }
     async startRun(request: StartRunRequest): Promise<StartRunResponse> {
         return parseStartResponse(await this.request("/api/runs", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(request) }));

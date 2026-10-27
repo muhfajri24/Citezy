@@ -55,7 +55,7 @@ export function ResearchInput() {
                     onChange={(event) => { setQuestion(event.target.value); if (error) setError(null); }}
                     onKeyDown={(event) => { if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) { event.preventDefault(); event.currentTarget.form?.requestSubmit(); } }}
                 />
-                <div className="research-form-bottom"><p id="question-help">{QUESTION_MIN_LENGTH}–{QUESTION_MAX_LENGTH} characters. One focused question works best.</p><span id="question-count" className={question.trim().length > QUESTION_MAX_LENGTH ? "count-over" : ""}>{question.trim().length} / {QUESTION_MAX_LENGTH}</span></div>
+                <div className="research-form-bottom"><p id="question-help">{QUESTION_MIN_LENGTH}–{QUESTION_MAX_LENGTH} characters. One focused question works best.</p><span id="question-count" className={Array.from(question.trim()).length > QUESTION_MAX_LENGTH ? "count-over" : ""}>{Array.from(question.trim()).length} / {QUESTION_MAX_LENGTH}</span></div>
                 {error && <Alert id="question-error" role="alert" className="research-error">{error}</Alert>}
                 <div className="research-submit-row"><p>{demo ? "DEMO ONLY: simulated research, no live search or AI-generated findings." : "Results come from the configured research service. Review evidence and limitations."}</p><Button type="submit" disabled={pending} className="research-submit">{pending ? <><span className="loading-dot" aria-hidden="true" />Creating research request...</> : <>Start Research <ArrowIcon className="small-icon" /></>}</Button></div>
                 <span className="sr-only" role="status">{pending ? "Creating your research request. Please wait." : ""}</span>

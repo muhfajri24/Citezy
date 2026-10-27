@@ -1,5 +1,7 @@
 # Frontend integration readiness — Phase 6
 
+> Current update, 27 October 2026: [Phase 7A](IMPLEMENTATION_PHASE_7A.md) supersedes the historical availability and input-limit notes below. Backend code/OpenAPI now exist and HTTP connectivity was checked on port 8001. Frontend input is 3–1000 code points; real mode requires an explicit base URL; HttpResearchApi.getHealth validates liveness. No backend/environment files changed during Phase 7A. Live AI readiness remains blocked by runtime access and backend fallback/grounding issues. The older Phase 6/6.6 findings are retained as history.
+
 25 Oktober 2026. **Preparation only; no live backend integration verified.** API_HANDOFF.md remains provisional pending Dev 1 approval. No backend files, API wire fields, statuses, endpoints or environment files changed.
 
 ## Existing compatible seams

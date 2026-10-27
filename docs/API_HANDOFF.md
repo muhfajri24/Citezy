@@ -2,6 +2,8 @@
 
 **PROVISIONAL — PENDING DEV 1 APPROVAL**
 
+Phase 7A update (27 October 2026): actual FastAPI/Pydantic and local OpenAPI at backend baseline 1925187 were inspected. Question limits are now 3–1000 code points in the frontend. Health/start/read endpoints are implemented in the backend; the HTTP adapter includes getHealth for liveness. Historical phase notes below are retained; current findings and unresolved semantic/runtime blockers are documented in [IMPLEMENTATION_PHASE_7A.md](IMPLEMENTATION_PHASE_7A.md). Contract compatibility is not proof of live Nemotron execution or formal Dev 1 sign-off.
+
 ## Phase 0 audit
 The repository remote is https://github.com/muhfajri24/Citezy.git, branch main. Initially only two untracked documentation files existed; frontend/ and backend/ were empty. No framework, package manager lockfile, scripts, or AGENTS.md existed. Existing documentation is preserved. Frontend is independent of Dev 1 backend ownership; no backend or AI integrations are implemented.
 
