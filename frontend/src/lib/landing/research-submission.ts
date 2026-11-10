@@ -1,9 +1,9 @@
 import type { ResearchApi } from "@/lib/api/interface";
 import { ResearchApiError } from "@/lib/api/errors";
 
-// Frontend demo limits only. Final real-mode limits require Dev 1 approval.
-export const QUESTION_MIN_LENGTH = 10;
-export const QUESTION_MAX_LENGTH = 500;
+// Verified against FastAPI StartRunRequest in the Phase 7A OpenAPI audit.
+export const QUESTION_MIN_LENGTH = 3;
+export const QUESTION_MAX_LENGTH = 1000;
 export const EXAMPLE_QUESTIONS = [
     { label: "Retrieval-augmented generation", question: "How does retrieval-augmented generation compare with fine-tuning for answering domain-specific questions?" },
     { label: "Efficient language models", question: "What are the trade-offs between LoRA and full fine-tuning for adapting language models?" },
@@ -11,7 +11,7 @@ export const EXAMPLE_QUESTIONS = [
 ] as const;
 
 export function validateQuestion(value: string): string | null {
-    const length = value.trim().length;
+    const length = Array.from(value.trim()).length;
     if (length === 0) return "Start with a research question.";
     if (length < QUESTION_MIN_LENGTH) return `Add a little detail: use at least ${QUESTION_MIN_LENGTH} characters.`;
     if (length > QUESTION_MAX_LENGTH) return `Keep your question within ${QUESTION_MAX_LENGTH} characters.`;
@@ -29,20 +29,26 @@ export function createSubmissionController(
     navigate: (path: string) => void,
 ) {
     let pending = false;
+    let generation = 0;
+    let controller: AbortController | undefined;
     return {
         /** React can preserve a landing page when navigating away; release its lock when it is shown again. */
-        reset() { pending = false; },
+        reset() { generation++; controller?.abort(); controller = undefined; pending = false; },
+        dispose() { generation++; controller?.abort(); controller = undefined; pending = false; },
         async submit(value: string): Promise<SubmissionResult> {
             if (pending) return { kind: "busy" };
             const validation = validateQuestion(value);
             if (validation) return { kind: "error", message: validation };
             pending = true;
+            const token = ++generation;
+            controller = new AbortController();
             try {
-                const result = await getApi().startRun({ question: value.trim() });
+                const result = await getApi().startRun({ question: value.trim() }, controller.signal);
+                if (generation !== token) return { kind: "busy" };
                 navigate(`/research/${encodeURIComponent(result.id)}`);
                 return { kind: "started", id: result.id };
             } catch (error) {
-                console.error("Submission failed:", error);
+                if (generation !== token) return { kind: "busy" };
                 pending = false;
                 const message = error instanceof ResearchApiError && error.error.code === "DEMO_MODE_REQUIRED"
                     ? "This preview only supports demo mode. Restart the app in mock mode to create a simulated request."

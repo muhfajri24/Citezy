@@ -1,0 +1,206 @@
+{
+  "notice": "TEST ONLY. Generated from backend Pydantic schemas at 1925187. Not live AI output.",
+  "runs": [
+    {
+      "id": "contract-test-only",
+      "question": "TEST ONLY: compare fictional methods",
+      "status": "queued",
+      "created_at": "2026-10-27T00:00:00Z",
+      "finished_at": null,
+      "model_id": null,
+      "steps": [
+        {
+          "stage": "planning",
+          "status": "waiting",
+          "detail": null,
+          "duration_ms": null
+        }
+      ],
+      "sources": [],
+      "evidence": [],
+      "report": null,
+      "error_code": null,
+      "error_message": null
+    },
+    {
+      "id": "contract-test-only",
+      "question": "TEST ONLY: compare fictional methods",
+      "status": "reading",
+      "created_at": "2026-10-27T00:00:00Z",
+      "finished_at": null,
+      "model_id": null,
+      "steps": [
+        {
+          "stage": "reading",
+          "status": "running",
+          "detail": null,
+          "duration_ms": null
+        }
+      ],
+      "sources": [],
+      "evidence": [],
+      "report": null,
+      "error_code": null,
+      "error_message": null
+    },
+    {
+      "id": "contract-test-only",
+      "question": "TEST ONLY: compare fictional methods",
+      "status": "completed",
+      "created_at": "2026-10-27T00:00:00Z",
+      "finished_at": "2026-10-27T00:01:00Z",
+      "model_id": null,
+      "steps": [
+        {
+          "stage": "planning",
+          "status": "waiting",
+          "detail": null,
+          "duration_ms": null
+        }
+      ],
+      "sources": [
+        {
+          "id": "s-test",
+          "title": "TEST ONLY fictional source",
+          "url": "https://example.org/test-only",
+          "domain": null,
+          "authors": [],
+          "year": null,
+          "fetched_at": null,
+          "access_status": "accessible"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "e-test",
+          "source_id": "s-test",
+          "claim_id": "c-test",
+          "excerpt": "TEST ONLY fictional excerpt.",
+          "explanation": null,
+          "match_offset": null
+        }
+      ],
+      "report": {
+        "summary": "TEST ONLY contract response",
+        "claims": [
+          {
+            "id": "c-test",
+            "text": "TEST ONLY claim",
+            "assessment": "partially_supported",
+            "evidence_ids": [
+              "e-test"
+            ],
+            "explanation": null
+          }
+        ],
+        "comparison": [
+          {
+            "id": "row-test",
+            "method": "TEST ONLY method",
+            "dataset": null,
+            "metric": null,
+            "result": null,
+            "units": null,
+            "limitation": null,
+            "claim_ids": [
+              "c-test"
+            ],
+            "comparability_warning": null
+          }
+        ]
+      },
+      "error_code": null,
+      "error_message": null
+    },
+    {
+      "id": "contract-test-only",
+      "question": "TEST ONLY: compare fictional methods",
+      "status": "partial",
+      "created_at": "2026-10-27T00:00:00Z",
+      "finished_at": "2026-10-27T00:01:00Z",
+      "model_id": null,
+      "steps": [
+        {
+          "stage": "planning",
+          "status": "waiting",
+          "detail": null,
+          "duration_ms": null
+        }
+      ],
+      "sources": [
+        {
+          "id": "s-test",
+          "title": "TEST ONLY fictional source",
+          "url": "https://example.org/test-only",
+          "domain": null,
+          "authors": [],
+          "year": null,
+          "fetched_at": null,
+          "access_status": "accessible"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "e-test",
+          "source_id": "s-test",
+          "claim_id": "c-test",
+          "excerpt": "TEST ONLY fictional excerpt.",
+          "explanation": null,
+          "match_offset": null
+        }
+      ],
+      "report": {
+        "summary": "TEST ONLY contract response",
+        "claims": [
+          {
+            "id": "c-test",
+            "text": "TEST ONLY claim",
+            "assessment": "partially_supported",
+            "evidence_ids": [
+              "e-test"
+            ],
+            "explanation": null
+          }
+        ],
+        "comparison": [
+          {
+            "id": "row-test",
+            "method": "TEST ONLY method",
+            "dataset": null,
+            "metric": null,
+            "result": null,
+            "units": null,
+            "limitation": null,
+            "claim_ids": [
+              "c-test"
+            ],
+            "comparability_warning": null
+          }
+        ]
+      },
+      "error_code": null,
+      "error_message": null
+    },
+    {
+      "id": "contract-test-only",
+      "question": "TEST ONLY: compare fictional methods",
+      "status": "failed",
+      "created_at": "2026-10-27T00:00:00Z",
+      "finished_at": "2026-10-27T00:01:00Z",
+      "model_id": null,
+      "steps": [
+        {
+          "stage": "planning",
+          "status": "waiting",
+          "detail": null,
+          "duration_ms": null
+        }
+      ],
+      "sources": [],
+      "evidence": [],
+      "report": null,
+      "error_code": "PIPELINE_ERROR",
+      "error_message": "TEST ONLY internal message must not be rendered"
+    }
+  ]
+}

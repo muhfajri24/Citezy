@@ -18,3 +18,5 @@
 .workspace-dialog .claim-inspection { padding-block:8px; }
 .premium-workspace .workspace-dialog { inset:0; margin:auto; }
 @media(max-width:600px) { .claim-inspection .claim-pagination button { flex:1; } .claim-inspection .claim-pagination span { width:100%; order:3; } }
+
+.workspace-export { display: flex; flex-wrap: wrap; gap: .6rem; margin: 1rem 0; }

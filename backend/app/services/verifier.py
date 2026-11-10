@@ -13,7 +13,7 @@ def verify_quote_in_text(quote: str, source_text: str) -> Tuple[bool, Optional[i
     First tries exact match, then normalized whitespace match.
     Returns (is_found, match_offset).
     """
-    if not quote or not source_text:
+    if not normalize_whitespace(quote) or not normalize_whitespace(source_text):
         return False, None
 
     # 1. Exact match attempt
@@ -27,14 +27,8 @@ def verify_quote_in_text(quote: str, source_text: str) -> Tuple[bool, Optional[i
 
     norm_offset = norm_source.find(norm_quote)
     if norm_offset != -1:
-        return True, norm_offset
-
-    # 3. Case-insensitive fallback check
-    norm_quote_lower = norm_quote.lower()
-    norm_source_lower = norm_source.lower()
-    lower_offset = norm_source_lower.find(norm_quote_lower)
-    if lower_offset != -1:
-        return True, lower_offset
+        # Normalized offsets do not refer to the original text.
+        return True, None
 
     return False, None
 

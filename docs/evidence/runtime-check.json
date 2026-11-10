@@ -1,0 +1,13 @@
+{
+  "checked_at": "2026-11-10T02:02:22Z",
+  "kind": "live-runtime-check",
+  "configured": {
+    "nebius_key": false,
+    "tavily_key": false,
+    "nemotron_model_id": false
+  },
+  "model_id": null,
+  "status": "blocked",
+  "services": {},
+  "reason": "Runtime calls require both private keys and an eligible model ID."
+}

@@ -11,6 +11,7 @@ import { ArrowIcon } from "./icons";
 export function ResearchInput() {
     const router = useRouter();
     const demo = isMockMode();
+    const unavailable = !demo && !process.env.NEXT_PUBLIC_API_BASE_URL?.trim();
     const [question, setQuestion] = useState("");
     const [error, setError] = useState<string | null>(null);
     const [pending, setPending] = useState(false);
@@ -20,12 +21,12 @@ export function ResearchInput() {
     useEffect(() => {
         let active = true;
         queueMicrotask(() => { if (active) { submission.reset(); setPending(false); } });
-        return () => { active = false; };
+        return () => { active = false; submission.dispose(); };
     }, [submission]);
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
-        if (pending) return;
+        if (pending || unavailable) return;
         const validation = validateQuestion(question);
         if (validation) {
             setError(validation);
@@ -44,8 +45,9 @@ export function ResearchInput() {
 
     return <section className="research-section landing-container" aria-labelledby="research-heading">
         <div className="research-panel">
-            <div className="research-heading"><span className="section-kicker">A GOOD QUESTION IS A GOOD START.</span><Badge className="demo-badge">{demo ? "Demo mode" : "Backend mode"}</Badge></div>
+            <div className="research-heading"><span className="section-kicker">A GOOD QUESTION IS A GOOD START.</span><Badge className="demo-badge">{demo ? "Demo mode" : unavailable ? "Setup in progress" : "Research mode"}</Badge></div>
             <h2 id="research-heading">What do you want to understand?</h2>
+            {unavailable && <Alert role="status">Research is temporarily unavailable while the service is being connected. You can explore how Citezy works on the <a href="/about">About page</a>.</Alert>}
             <form onSubmit={handleSubmit} noValidate aria-busy={pending} data-submission={pending ? "pending" : "idle"}>
                 <div className="submission-feedback" aria-hidden="true"><span /></div>
                 <label htmlFor="research-question" className="sr-only">Your research question</label>
@@ -55,9 +57,9 @@ export function ResearchInput() {
                     onChange={(event) => { setQuestion(event.target.value); if (error) setError(null); }}
                     onKeyDown={(event) => { if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) { event.preventDefault(); event.currentTarget.form?.requestSubmit(); } }}
                 />
-                <div className="research-form-bottom"><p id="question-help">{QUESTION_MIN_LENGTH}–{QUESTION_MAX_LENGTH} characters. One focused question works best.</p><span id="question-count" className={question.trim().length > QUESTION_MAX_LENGTH ? "count-over" : ""}>{question.trim().length} / {QUESTION_MAX_LENGTH}</span></div>
+                <div className="research-form-bottom"><p id="question-help">{QUESTION_MIN_LENGTH}–{QUESTION_MAX_LENGTH} characters. One focused question works best.</p><span id="question-count" className={Array.from(question.trim()).length > QUESTION_MAX_LENGTH ? "count-over" : ""}>{Array.from(question.trim()).length} / {QUESTION_MAX_LENGTH}</span></div>
                 {error && <Alert id="question-error" role="alert" className="research-error">{error}</Alert>}
-                <div className="research-submit-row"><p>{demo ? "DEMO ONLY: simulated research, no live search or AI-generated findings." : "Results come from the configured research service. Review evidence and limitations."}</p><Button type="submit" disabled={pending} className="research-submit">{pending ? <><span className="loading-dot" aria-hidden="true" />Creating research request...</> : <>Start Research <ArrowIcon className="small-icon" /></>}</Button></div>
+                <div className="research-submit-row"><p>{demo ? "DEMO ONLY: simulated research, no live search or AI-generated findings." : unavailable ? "Research will be available after service setup is complete." : "Results come from the configured research service. Review evidence and limitations."}</p><Button type="submit" disabled={pending || unavailable} className="research-submit">{pending ? <><span className="loading-dot" aria-hidden="true" />Creating research request...</> : <>Start Research <ArrowIcon className="small-icon" /></>}</Button></div>
                 <span className="sr-only" role="status">{pending ? "Creating your research request. Please wait." : ""}</span>
             </form>
             <div className="example-questions"><span>NEED A STARTING POINT?</span><p className="example-help">Choose an example to fill the question above.</p><div>{EXAMPLE_QUESTIONS.map((example) => <button key={example.label} type="button" disabled={pending} aria-label={example.label} aria-pressed={selectedExample?.label === example.label} onClick={() => { setQuestion(example.question); setError(null); textarea.current?.focus({ preventScroll: true }); textarea.current?.scrollIntoView({ block: "center", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" }); }}>{example.label}<span aria-hidden="true">{selectedExample?.label === example.label ? "✓" : "↗"}</span></button>)}</div><p className="example-feedback" role="status">{selectedExample ? `${selectedExample.label} loaded into your question. Edit it above or choose Start researching.` : ""}</p></div>

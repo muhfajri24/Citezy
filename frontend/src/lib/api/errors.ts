@@ -1,7 +1,7 @@
 import type { ApiError } from "@/types/research";
 export class ResearchApiError extends Error {
     readonly error: ApiError["error"];
-    constructor(code: string, message: string, readonly status?: number, retryable = false) {
+    constructor(code: string, message: string, readonly status?: number, retryable = false, readonly retryAfterMs?: number) {
         super(message);
         this.name = "ResearchApiError";
         this.error = { code, message, retryable };
@@ -14,6 +14,7 @@ export function httpError(status: number): ResearchApiError {
         boolean
     ]> = {
         400: ["VALIDATION_ERROR", "Please check your research question.", false],
+        422: ["VALIDATION_ERROR", "Please check your research question.", false],
         404: ["NOT_FOUND", "This research run is missing or has expired.", false],
         429: ["RATE_LIMITED", "Too many requests. Please wait before trying again.", true],
         500: ["UNAVAILABLE", "The research service is temporarily unavailable.", true],

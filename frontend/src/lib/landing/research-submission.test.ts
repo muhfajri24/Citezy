@@ -12,10 +12,10 @@ function fakeApi(startRun = vi.fn<ResearchApi["startRun"]>().mockResolvedValue({
 }
 
 describe("demo question validation", () => {
-    it.each(["", "   ", "short", "x".repeat(501)])("rejects invalid input %#", (value) => {
+    it.each(["", "   ", "xx", "x".repeat(1001)])("rejects invalid input %#", (value) => {
         expect(validateQuestion(value)).toBeTypeOf("string");
     });
-    it.each(["x".repeat(10), "x".repeat(500), "   " + question + "   "])("accepts boundary/trimmed input %#", (value) => {
+    it.each(["x".repeat(3), "x".repeat(1000), "   " + question + "   "])("accepts boundary/trimmed input %#", (value) => {
         expect(validateQuestion(value)).toBeNull();
     });
     it("provides three valid example questions", () => {
@@ -38,7 +38,7 @@ describe("submission lifecycle", () => {
         const navigate = vi.fn();
         const submission = createSubmissionController(() => api, navigate);
         expect(await submission.submit(`  ${question}  `)).toEqual({ kind: "started", id: "demo/a?b" });
-        expect(api.startRun).toHaveBeenCalledWith({ question });
+        expect(api.startRun).toHaveBeenCalledWith({ question }, expect.any(AbortSignal));
         expect(navigate).toHaveBeenCalledWith("/research/demo%2Fa%3Fb");
     });
     it("blocks duplicate requests during submission and navigation", async () => {
@@ -115,5 +115,22 @@ describe("Phase 3 transport boundary", () => {
         const fetcher = vi.spyOn(globalThis, "fetch");
         expect(() => getDemoResearchApi()).toThrow("requires mock");
         expect(fetcher).not.toHaveBeenCalled();
+    });
+});
+
+
+describe("submission teardown", () => {
+    it("aborts an abandoned request and refuses stale navigation", async () => {
+        let finish!: (value: {id:string;status:"queued"}) => void;
+        const api = fakeApi(vi.fn<ResearchApi["startRun"]>().mockImplementation(() => new Promise(resolve => { finish = resolve; })));
+        const navigate = vi.fn();
+        const controller = createSubmissionController(() => api,navigate);
+        const pending = controller.submit(question);
+        const signal = vi.mocked(api.startRun).mock.calls[0][1]!;
+        controller.dispose();
+        expect(signal.aborted).toBe(true);
+        finish({id:"abandoned",status:"queued"});
+        expect((await pending).kind).toBe("busy");
+        expect(navigate).not.toHaveBeenCalled();
     });
 });

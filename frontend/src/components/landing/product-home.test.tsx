@@ -42,7 +42,19 @@ describe("research-first routes and mode isolation", () => {
     });
     it("real home describes backend results instead of a demo", () => {
         vi.stubEnv("NEXT_PUBLIC_DATA_MODE", "real");
+        vi.stubEnv("NEXT_PUBLIC_API_BASE_URL", "https://api.test");
         const html = renderToStaticMarkup(<Home />);
         expect(html).not.toContain("DEMO ONLY"); expect(html).toContain("configured research service");
     });
+});
+
+
+it("disables real submission and explains availability when no backend URL is configured", () => {
+    vi.stubEnv("NEXT_PUBLIC_DATA_MODE", "real");
+    vi.stubEnv("NEXT_PUBLIC_API_BASE_URL", "");
+    const html = renderToStaticMarkup(<Home />);
+    expect(html).toContain("Research is temporarily unavailable");
+    expect(html).toMatch(/<button(?=[^>]*disabled="")(?=[^>]*class="[^"]*research-submit)[^>]*>/);
+    expect(html).not.toContain("API base URL");
+    expect(html).not.toContain("DEMO ONLY");
 });
