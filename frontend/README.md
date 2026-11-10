@@ -42,6 +42,10 @@ npm run start
 
 Standalone output and a non-root Docker runtime are prepared. See [deployment runbook](../docs/DEPLOYMENT.md) for Vercel or Docker build configuration and the remaining acceptance matrix. Docker image execution was not available in the execution environment.
 
-Latest recorded checks: lint, typecheck, **252 tests**, production build and local production HTTP smoke pass. Browser access to the sandbox-local server was refused; new desktop/mobile/zoom/reduced-motion/contrast checks and authentic demo footage remain pending on a reachable preview. Existing screenshots under docs/screenshots are historical mock QA, not new live evidence.
+Latest recorded checks: lint, typecheck, **253 tests**, production build and local production HTTP smoke pass. A Vercel-hosted demo was subsequently tested in the cloud browser: no-login landing, blank validation, example submission, actual mock stages, unsupported/partial evidence, inspector Escape/focus return, terminal reload recovery, keyboard tab navigation and both download events passed. Desktop page clientWidth/scrollWidth were both 1348 px. Narrow/mobile/200% zoom/reduced-motion/screen-reader checks remain pending; attempted zoom shortcuts did not change browser viewport or pixel ratio. Existing screenshots under docs/screenshots remain historical mock QA.
 
-**Public frontend URL:** not deployed in this work. Vercel access and an HTTPS backend origin are needed. No invented URL, model success, screenshot or video is supplied. See [Dev 2 release report](../docs/DEV2_RELEASE_REPORT.md) and [Dev 1 handoff](../docs/DEV1_HANDOFF.md).
+**Production:** https://citezy.vercel.app/ — real mode, service setup pending; submit is disabled until a backend URL is configured.
+
+**UI demo:** https://citezy-1fak6nvjr-itzfajri4-9425.vercel.app/ — explicitly fictional mock results, no live AI/search.
+
+Vercel project `citezy`, Node 22, frontend root directory. Source was deployed through the API because the Vercel account lacks a GitHub Login Connection; GitHub auto-deploy is not configured. Configure the actual backend HTTPS URL and rebuild for live research. See [Vercel follow-up](../docs/VERCEL_RELEASE.md), [Dev 2 report](../docs/DEV2_RELEASE_REPORT.md) and [Dev 1 handoff](../docs/DEV1_HANDOFF.md).

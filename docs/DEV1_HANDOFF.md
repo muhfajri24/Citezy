@@ -1,5 +1,8 @@
 # Dev 1 handoff — finish the live backend and unblock release
 
+> **Vercel follow-up, 10 November 2026:** Vercel workspace access is now granted; production frontend and explicit UI demo are deployed. Desktop browser flow, inspector, recovery and downloads were verified on the fictional demo. Production now disables submit and explains unavailability until a backend URL is configured. C3, live end-to-end acceptance, mobile/zoom/assistive-technology checks and authentic live footage remain pending. See [VERCEL_RELEASE.md](VERCEL_RELEASE.md). Earlier unavailable-hosting/browser statements below describe the initial pass.
+
+
 To Dev 1: `tmuhammadsanubari-cell` (role mapping from repository tracker #1 / ownership records). From Dev 2: `muhfajri24`. Requested by repository owner, 10 November 2026. Review branch `fix/citezy-live-evidence`, based on frontend contract baseline aa2c7bc, PR target `dev`.
 
 ## Read first

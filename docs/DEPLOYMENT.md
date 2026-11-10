@@ -1,6 +1,6 @@
 # Deployment and final browser acceptance
 
-Status: deployment preparation only. No public URL or successful live research is claimed. Keep the reviewed source in the Citezy GitHub repository; no architecture migration is required.
+Status: frontend deployed to https://citezy.vercel.app/; actual live research remains blocked by backend configuration/runtime access. UI demo: https://citezy-1fak6nvjr-itzfajri4-9425.vercel.app/. See VERCEL_RELEASE.md for observed browser checks. Keep the reviewed source in the Citezy GitHub repository; no architecture migration is required.
 
 ## Frontend: Vercel
 
@@ -9,7 +9,7 @@ Status: deployment preparation only. No public URL or successful live research i
 3. Dev 1 deploys the HTTPS backend and adds the exact frontend origin to `CORS_ORIGINS`. Confirm the model/search credits and public-access resource controls before accepting external runs.
 4. Deploy and record the provider-returned URL and commit. Confirm judge access without login or payment using a clean browser session. Rebuild when public environment variables change.
 
-Vercel was not connected during this work. Its connection is separate from GitHub access. No paid plan or new subscription was purchased. Reference: https://vercel.com/docs/frameworks/full-stack/nextjs
+Vercel is now connected and the frontend has been deployed. Vercel GitHub Login Connection is still absent, so deployments used the exact reviewed frontend source through the API rather than Git auto-deploy. No paid plan or new subscription was purchased. Reference: https://vercel.com/docs/frameworks/full-stack/nextjs
 
 ## Alternative: standalone Node/Docker
 

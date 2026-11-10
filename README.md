@@ -4,8 +4,9 @@ Citezy is a no-login CS/ML research workspace linking questions, source excerpts
 
 ## Current release status
 
-The frontend and FastAPI pipeline are implemented. **Live Nebius/Nemotron and Tavily access, public deployment, and final browser acceptance remain unverified.** Missing credentials or provider failures produce an explicit failed/partial run; no fictional source or supported assessment is substituted. The latest engineering work is on `fix/citezy-live-evidence`, based on `feat/frontend`, for review into `dev`.
+The frontend and FastAPI pipeline are implemented. **Live Nebius/Nemotron and Tavily access and final live-research browser acceptance remain unverified. Frontend hosting is deployed: [production](https://citezy.vercel.app/) (service connection pending) and [explicitly fictional UI demo](https://citezy-1fak6nvjr-itzfajri4-9425.vercel.app/).** Missing credentials or provider failures produce an explicit failed/partial run; no fictional source or supported assessment is substituted. The latest engineering work is on `fix/citezy-live-evidence`, based on `feat/frontend`, for review into `dev`.
 
+- [Vercel deployment and browser QA follow-up](docs/VERCEL_RELEASE.md)
 - [Verification and Dev 2 completion matrix](docs/DEV2_RELEASE_REPORT.md)
 - [Dev 1 handoff and ordered acceptance tasks](docs/DEV1_HANDOFF.md)
 - [Deployment and browser acceptance runbook](docs/DEPLOYMENT.md)
