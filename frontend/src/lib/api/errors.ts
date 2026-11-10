@@ -1,7 +1,7 @@
 import type { ApiError } from "@/types/research";
 export class ResearchApiError extends Error {
     readonly error: ApiError["error"];
-    constructor(code: string, message: string, readonly status?: number, retryable = false) {
+    constructor(code: string, message: string, readonly status?: number, retryable = false, readonly retryAfterMs?: number) {
         super(message);
         this.name = "ResearchApiError";
         this.error = { code, message, retryable };

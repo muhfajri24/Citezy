@@ -1,90 +1,57 @@
-import urllib.parse
-from typing import List, Dict, Any, Optional
+"""Live-only source retrieval. Search snippets are not passed off as full text."""
+from urllib.parse import urlsplit, urlunsplit
 import httpx
 from ..config import settings
+from .errors import ResearchServiceError, has_credential
+
+
+def canonical_url(value: str) -> str | None:
+    try:
+        url = urlsplit(value)
+        if url.scheme not in {"http", "https"} or not url.hostname or url.username or url.password:
+            return None
+        return urlunsplit((url.scheme.lower(), url.netloc.lower(), url.path, url.query, ""))
+    except (ValueError, TypeError):
+        return None
 
 
 class TavilyService:
-    def __init__(self, api_key: Optional[str] = None):
-        self.api_key = api_key or settings.TAVILY_API_KEY
-        self.base_url = "https://api.tavily.com"
+    def __init__(self, api_key=None, transport=None):
+        self.api_key = settings.TAVILY_API_KEY if api_key is None else api_key
+        self.transport = transport
 
-    def extract_domain(self, url: str) -> Optional[str]:
+    async def search(self, query: str, max_results: int = 8) -> list[dict]:
+        if not has_credential(self.api_key):
+            raise ResearchServiceError("SEARCH_NOT_CONFIGURED", "Live search access is not configured. No sources were retrieved.")
         try:
-            parsed = urllib.parse.urlparse(url)
-            return parsed.netloc or None
-        except Exception:
-            return None
-
-    async def search(self, query: str, max_results: int = 5) -> List[Dict[str, Any]]:
-        """
-        Search Tavily API for relevant scientific/CS-ML web sources.
-        Returns list of source dictionaries with deduplicated URLs.
-        """
-        if not self.api_key:
-            # Fallback or mock data if key not yet provided
-            return self._mock_fallback_sources(query)
-
-        payload = {
-            "api_key": self.api_key,
-            "query": query,
-            "search_depth": "advanced",
-            "include_raw_content": False,
-            "max_results": max_results,
-        }
-
-        async with httpx.AsyncClient(timeout=15.0) as client:
-            response = await client.post(f"{self.base_url}/search", json=payload)
-            if response.status_code != 200:
-                # Log error and fallback
-                return self._mock_fallback_sources(query)
-            data = response.json()
-
-        results = data.get("results", [])
-        sources = []
-        seen_urls = set()
-
-        for idx, item in enumerate(results, start=1):
-            url = item.get("url", "")
-            if not url or url in seen_urls:
+            async with httpx.AsyncClient(timeout=20, transport=self.transport, follow_redirects=False) as client:
+                response = await client.post("https://api.tavily.com/search", headers={"Authorization": f"Bearer {self.api_key}"}, json={
+                    "query": query, "search_depth": "advanced",
+                    "include_raw_content": True, "max_results": min(max_results, 8),
+                })
+                response.raise_for_status()
+                data = response.json()
+                if not isinstance(data, dict) or not isinstance(data.get("results"), list):
+                    raise ValueError("invalid results")
+        except (httpx.HTTPError, ValueError):
+            raise ResearchServiceError("SEARCH_UNAVAILABLE", "Live source search failed. No substitute sources were generated.") from None
+        sources, seen = [], set()
+        for item in data["results"]:
+            if not isinstance(item, dict):
                 continue
-            seen_urls.add(url)
-
-            domain = self.extract_domain(url)
-            title = item.get("title", f"Source {idx}")
-            content = item.get("content", "")
-
-            sources.append({
-                "id": f"src-{idx}",
-                "title": title,
-                "url": url,
-                "domain": domain,
-                "raw_text": content,
-                "access_status": "accessible",
-            })
-
+            url = canonical_url(item.get("url", ""))
+            if not url or url in seen:
+                continue
+            seen.add(url)
+            raw = item.get("raw_content")
+            # A snippet can be displayed as metadata but is not evidence from a retrieved document.
+            readable = isinstance(raw, str) and bool(raw.strip())
+            sources.append({"title": str(item.get("title") or "Untitled source"), "url": url,
+                            "domain": urlsplit(url).hostname, "raw_text": raw[:16000] if readable else "",
+                            "access_status": "accessible" if readable else "unavailable"})
+            if len(sources) >= max_results:
+                break
         return sources
-
-    def _mock_fallback_sources(self, query: str) -> List[Dict[str, Any]]:
-        """Safe fallback fixtures when API key is not yet configured."""
-        return [
-            {
-                "id": "src-1",
-                "title": "A Survey on Speculative Decoding in LLMs",
-                "url": "https://example.org/papers/speculative-decoding-survey",
-                "domain": "example.org",
-                "raw_text": "Speculative decoding achieves 2.1x to 2.8x wall-clock speedup on GSM8K using smaller draft models without degradation in output distribution.",
-                "access_status": "accessible",
-            },
-            {
-                "id": "src-2",
-                "title": "Comparative Benchmarks for Inference Acceleration",
-                "url": "https://example.org/papers/inference-acceleration-benchmarks",
-                "domain": "example.org",
-                "raw_text": "On standard humaneval benchmarks, medusa draft heads reported 2.3x speedup while lookahead decoding attained 1.8x speedup under identical hardware.",
-                "access_status": "accessible",
-            },
-        ]
 
 
 tavily_service = TavilyService()

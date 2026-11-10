@@ -40,7 +40,7 @@ def test_start_run_and_poll():
     assert run_data["id"] == run_id
     assert run_data["question"] == payload["question"]
     assert run_data["status"] in [
-        "queued", "planning", "searching", "reading", "verifying", "synthesizing", "completed", "partial"
+        "queued", "planning", "searching", "reading", "verifying", "synthesizing", "completed", "partial", "failed", "cancelled"
     ]
     
     # Check timestamp ends in Z

@@ -29,7 +29,9 @@ export function createRunPoller(api: ResearchApi, id: string, publish: (state: R
             const known = error instanceof ResearchApiError;
             const retry = known && error.error.retryable && failures < 3;
             emit({ error: known ? error.message : "This research run could not be loaded. Please try again.", loading: false });
-            if (retry) delay = 2000 * 2 ** failures++;
+            if (retry) {
+                delay = Math.max(2000 * 2 ** failures++, error.retryAfterMs ?? 0);
+            }
         } finally {
             if (token === generation) {
                 controller = undefined;

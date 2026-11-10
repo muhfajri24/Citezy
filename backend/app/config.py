@@ -8,8 +8,8 @@ load_dotenv()
 
 class Settings:
     NEBIUS_API_KEY: str = os.getenv("NEBIUS_API_KEY", "")
-    NEBIUS_BASE_URL: str = os.getenv("NEBIUS_BASE_URL", "https://api.tokenfactory.nebius.ai/v1")
-    NEMOTRON_MODEL_ID: str = os.getenv("NEMOTRON_MODEL_ID", "nvidia/nemotron-4-340b-instruct")
+    NEBIUS_BASE_URL: str = os.getenv("NEBIUS_BASE_URL", "https://api.tokenfactory.nebius.com/v1")
+    NEMOTRON_MODEL_ID: str = os.getenv("NEMOTRON_MODEL_ID", "")
 
     TAVILY_API_KEY: str = os.getenv("TAVILY_API_KEY", "")
 

@@ -29,19 +29,26 @@ export function createSubmissionController(
     navigate: (path: string) => void,
 ) {
     let pending = false;
+    let generation = 0;
+    let controller: AbortController | undefined;
     return {
         /** React can preserve a landing page when navigating away; release its lock when it is shown again. */
-        reset() { pending = false; },
+        reset() { generation++; controller?.abort(); controller = undefined; pending = false; },
+        dispose() { generation++; controller?.abort(); controller = undefined; pending = false; },
         async submit(value: string): Promise<SubmissionResult> {
             if (pending) return { kind: "busy" };
             const validation = validateQuestion(value);
             if (validation) return { kind: "error", message: validation };
             pending = true;
+            const token = ++generation;
+            controller = new AbortController();
             try {
-                const result = await getApi().startRun({ question: value.trim() });
+                const result = await getApi().startRun({ question: value.trim() }, controller.signal);
+                if (generation !== token) return { kind: "busy" };
                 navigate(`/research/${encodeURIComponent(result.id)}`);
                 return { kind: "started", id: result.id };
             } catch (error) {
+                if (generation !== token) return { kind: "busy" };
                 pending = false;
                 const message = error instanceof ResearchApiError && error.error.code === "DEMO_MODE_REQUIRED"
                     ? "This preview only supports demo mode. Restart the app in mock mode to create a simulated request."

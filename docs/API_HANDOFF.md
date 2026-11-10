@@ -1,5 +1,8 @@
 # Citezy frontend/backend handoff
 
+> **10 November 2026 update:** Historical notes below are retained. Current implementation/status, remaining sign-off and C3/deployment blockers are in [DEV2_RELEASE_REPORT.md](DEV2_RELEASE_REPORT.md) and [DEV1_HANDOFF.md](DEV1_HANDOFF.md). Backend now exists; frontend real transport/health are implemented. No live provider access or production acceptance is implied.
+
+
 **PROVISIONAL — PENDING DEV 1 APPROVAL**
 
 Phase 7A update (27 October 2026): actual FastAPI/Pydantic and local OpenAPI at backend baseline 1925187 were inspected. Question limits are now 3–1000 code points in the frontend. Health/start/read endpoints are implemented in the backend; the HTTP adapter includes getHealth for liveness. Historical phase notes below are retained; current findings and unresolved semantic/runtime blockers are documented in [IMPLEMENTATION_PHASE_7A.md](IMPLEMENTATION_PHASE_7A.md). Contract compatibility is not proof of live Nemotron execution or formal Dev 1 sign-off.

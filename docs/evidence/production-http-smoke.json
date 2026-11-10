@@ -1,0 +1,23 @@
+{
+  "kind": "production-http-smoke",
+  "providers": "deliberately unconfigured; no live inference",
+  "checks": {
+    "health": true,
+    "production_landing": true,
+    "about": true,
+    "development_route_hidden": true,
+    "validation": true,
+    "missing_run": true,
+    "cors_preflight_headers_only": true,
+    "honest_unconfigured_failure": true,
+    "failed_stage": true,
+    "dynamic_workbench_shell": true
+  },
+  "run_result": {
+    "status": "failed",
+    "error_code": "MODEL_NOT_CONFIGURED",
+    "source_count": 0,
+    "has_report": false
+  },
+  "status": "pass"
+}

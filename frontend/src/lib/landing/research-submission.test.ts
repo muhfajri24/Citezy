@@ -38,7 +38,7 @@ describe("submission lifecycle", () => {
         const navigate = vi.fn();
         const submission = createSubmissionController(() => api, navigate);
         expect(await submission.submit(`  ${question}  `)).toEqual({ kind: "started", id: "demo/a?b" });
-        expect(api.startRun).toHaveBeenCalledWith({ question });
+        expect(api.startRun).toHaveBeenCalledWith({ question }, expect.any(AbortSignal));
         expect(navigate).toHaveBeenCalledWith("/research/demo%2Fa%3Fb");
     });
     it("blocks duplicate requests during submission and navigation", async () => {
@@ -115,5 +115,22 @@ describe("Phase 3 transport boundary", () => {
         const fetcher = vi.spyOn(globalThis, "fetch");
         expect(() => getDemoResearchApi()).toThrow("requires mock");
         expect(fetcher).not.toHaveBeenCalled();
+    });
+});
+
+
+describe("submission teardown", () => {
+    it("aborts an abandoned request and refuses stale navigation", async () => {
+        let finish!: (value: {id:string;status:"queued"}) => void;
+        const api = fakeApi(vi.fn<ResearchApi["startRun"]>().mockImplementation(() => new Promise(resolve => { finish = resolve; })));
+        const navigate = vi.fn();
+        const controller = createSubmissionController(() => api,navigate);
+        const pending = controller.submit(question);
+        const signal = vi.mocked(api.startRun).mock.calls[0][1]!;
+        controller.dispose();
+        expect(signal.aborted).toBe(true);
+        finish({id:"abandoned",status:"queued"});
+        expect((await pending).kind).toBe("busy");
+        expect(navigate).not.toHaveBeenCalled();
     });
 });

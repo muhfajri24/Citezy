@@ -8,11 +8,20 @@ export function validateBaseUrl(value: string): string {
         const url = new URL(value);
         if (!["http:", "https:"].includes(url.protocol) || url.username || url.password || url.search || url.hash)
             throw new Error();
+        if (typeof window !== "undefined" && window.location.protocol === "https:" && url.protocol !== "https:")
+            throw new Error();
         return url.toString().replace(/\/$/, "");
     }
     catch {
         throw new ResearchApiError("CONFIGURATION_ERROR", "Real data mode requires a valid HTTP(S) API base URL without credentials, query or fragment.");
     }
+}
+/** Accept seconds or HTTP-date; cap server-directed pauses at five minutes. */
+export function parseRetryAfter(value: string | null, now = Date.now()): number | undefined {
+    if (!value?.trim()) return undefined;
+    const text = value.trim();
+    const ms = /^\d+$/.test(text) ? Number(text) * 1000 : Date.parse(text) - now;
+    return Number.isFinite(ms) && ms >= 0 ? Math.min(ms, 300000) : undefined;
 }
 interface HttpOptions {
     fetch?: typeof fetch;
@@ -44,8 +53,11 @@ export class HttpResearchApi implements ResearchApi {
         const targetUrl = `${this.baseUrl}${path}`;
         try {
             const response = await this.fetcher(targetUrl, { ...init, signal: controller.signal });
-            if (!response.ok)
-                throw httpError(response.status);
+            if (!response.ok) {
+                const error = httpError(response.status);
+                throw new ResearchApiError(error.error.code, error.message, error.status, Boolean(error.error.retryable),
+                    parseRetryAfter(response.headers.get("Retry-After")));
+            }
             try {
                 return await response.json();
             }
@@ -76,8 +88,8 @@ export class HttpResearchApi implements ResearchApi {
             throw new ResearchApiError("INVALID_RESPONSE", "The research service returned an invalid health response.");
         return { status: "ok" };
     }
-    async startRun(request: StartRunRequest): Promise<StartRunResponse> {
-        return parseStartResponse(await this.request("/api/runs", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(request) }));
+    async startRun(request: StartRunRequest, signal?: AbortSignal): Promise<StartRunResponse> {
+        return parseStartResponse(await this.request("/api/runs", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(request) }, signal));
     }
     async getRun(id: string, signal?: AbortSignal): Promise<ResearchRun> {
         if (!id.trim() || id === "." || id === "..")

@@ -20,7 +20,7 @@ export function ResearchInput() {
     useEffect(() => {
         let active = true;
         queueMicrotask(() => { if (active) { submission.reset(); setPending(false); } });
-        return () => { active = false; };
+        return () => { active = false; submission.dispose(); };
     }, [submission]);
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
